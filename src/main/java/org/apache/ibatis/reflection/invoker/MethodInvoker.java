@@ -22,6 +22,7 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 封装反射获取的类的方法的类，其中的invoke方法执行底层封装的 Method 方法，一般是具体的setter/getter等
  */
 public class MethodInvoker implements Invoker {
 

@@ -21,6 +21,7 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 给那些没有getter的属性生成的用于读属性的invoker，调用invoke方法可以读取对应的属性值
  */
 public class GetFieldInvoker implements Invoker {
   private final Field field;

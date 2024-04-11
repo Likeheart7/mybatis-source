@@ -21,6 +21,7 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * 给那些没有setter的属性生成的用于写属性的invoker，调用invoke方法可以更改对应的属性值
  */
 public class SetFieldInvoker implements Invoker {
   private final Field field;

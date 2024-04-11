@@ -20,8 +20,8 @@ import java.util.Properties;
 
 /**
  * MyBatis uses an ObjectFactory to create all needed new Objects.
- *
  * @author Clinton Begin
+ * MyBatis使用ObjectFactory创建所有需要的新对象
  */
 public interface ObjectFactory {
 

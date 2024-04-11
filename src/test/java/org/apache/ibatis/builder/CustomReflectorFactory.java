@@ -15,8 +15,12 @@
  */
 package org.apache.ibatis.builder;
 
+
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 
+/**
+ * 用于给用户自定义ReflectorFactory工厂的
+ */
 public class CustomReflectorFactory extends DefaultReflectorFactory {
 
 }

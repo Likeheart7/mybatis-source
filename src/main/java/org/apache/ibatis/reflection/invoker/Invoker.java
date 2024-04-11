@@ -19,8 +19,16 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Clinton Begin
+ * 在 Reflector对象的初始化过程中，所有属性的 getter/setter方法都会被封装成 MethodInvoker对象，
+ * 没有 getter/setter 的字段也会生成对应的 Get/SetFieldInvoker对象
  */
 public interface Invoker {
+  /**
+   * 调用底层封装的Method方法或读写指定的属性
+   * @param target 调用方法的对象
+   * @param args  方法惨呼
+   * @return 返回值
+   */
   Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException;
 
   Class<?> getType();

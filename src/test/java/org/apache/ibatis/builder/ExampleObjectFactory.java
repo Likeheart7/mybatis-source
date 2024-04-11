@@ -20,6 +20,9 @@ import java.util.Properties;
 
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 
+/**
+ * 对象工程的实现类示例
+ */
 public class ExampleObjectFactory extends DefaultObjectFactory {
   private Properties properties;
 

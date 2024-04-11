@@ -35,16 +35,28 @@ import org.apache.ibatis.reflection.Reflector;
 
 /**
  * @author Clinton Begin
+ * ObjectFactory接口的默认实现，用来创建对象
+ * 核心方法{@link #create(Class)} 和 {@link #create(Class, List, List)}
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
   private static final long serialVersionUID = -8855120656740914948L;
 
+  /**
+   * 指定类型使用无参构造器创建
+   */
   @Override
   public <T> T create(Class<T> type) {
     return create(type, null, null);
   }
 
+  /**
+   * 指定类型，参数类型，参数值使用对应构造器创建
+   * @param type  要创建的对象的类型
+   * @param constructorArgTypes 参数类型
+   * @param constructorArgs 参数值
+   * @return 创建的新对象
+   */
   @SuppressWarnings("unchecked")
   @Override
   public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
@@ -53,9 +65,17 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     return (T) instantiateClass(classToCreate, constructorArgTypes, constructorArgs);
   }
 
+  /**
+   * 供create方法调用，真正创建对象的方法
+   * @param type  要创建的对象的类型
+   * @param constructorArgTypes 参数类型
+   * @param constructorArgs 参数值
+   * @return 创建的新对象
+   */
   private  <T> T instantiateClass(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     try {
       Constructor<T> constructor;
+      // 如果没有传递参数，就调用无参构造器
       if (constructorArgTypes == null || constructorArgs == null) {
         constructor = type.getDeclaredConstructor();
         try {
@@ -69,6 +89,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
           }
         }
       }
+      // 根据传入的参数类型获取指定的有参构造器
       constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[0]));
       try {
         return constructor.newInstance(constructorArgs.toArray(new Object[0]));

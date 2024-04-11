@@ -57,8 +57,11 @@ public class TypeParameterResolver {
    *         they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveReturnType(Method method, Type srcType) {
+    // 获取这个方法真正的返回类型
     Type returnType = method.getGenericReturnType();
+    // 获取申明这个方法的具体的类的类型
     Class<?> declaringClass = method.getDeclaringClass();
+    // 一般返回值就是returnType, resolveType() 对其做了一些处理
     return resolveType(returnType, srcType, declaringClass);
   }
 
