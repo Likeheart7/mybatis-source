@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--定义属性值-->
+    <properties>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </properties>
+    <!--全局配置-->
+    <settings>
+        <!--全局性地开启或关闭所有映射器配置文件中已配置的任何缓存。-->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+    <!--配置别名信息-->
+    <!--mybatis-config.xml配置文件配置的别名可以在mapper层的xml文件中使用-->
+    <typeAliases>
+        <typeAlias type="com.chenx.learning.pojo.Customer" alias="Customer"/>
+        <typeAlias type="com.chenx.learning.pojo.Product" alias="Product"/>
+        <typeAlias type="com.chenx.learning.pojo.OrderItem" alias="OrderItem"/>
+        <typeAlias type="com.chenx.learning.pojo.Order" alias="Order"/>
+        <typeAlias type="com.chenx.learning.pojo.Address" alias="Address"/>
+    </typeAliases>
+
+    <!--环境配置，default表示默认选择的环境-->
+    <environments default="dev">
+        <environment id="dev">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis-learning?serverTimezone=Asia/Shanghai"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--如果你正在使用 Spring + MyBatis，则没有必要配置事务管理器，因为 Spring 模块会使用自带的管理器来覆盖前面的配置。-->
+
+    <!--这些配置会告诉 MyBatis 去哪里找映射文件，根路径是resources-->
+    <mappers>
+        <mapper resource="mapper/CustomerMapper.xml"/>
+        <mapper resource="mapper/ProductMapper.xml"/>
+        <mapper resource="mapper/OrderItemMapper.xml"/>
+        <mapper resource="mapper/OrderMapper.xml"/>
+        <mapper resource="mapper/AddressMapper.xml"/>
+    </mappers>
+</configuration>
