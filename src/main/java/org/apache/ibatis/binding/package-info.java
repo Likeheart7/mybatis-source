@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * <p>
- * <p>
- * 绑定mapper和xml文件的模块
- * Bings mapper interfaces with mapped statements.
  */
 /**
  * 绑定mapper和xml文件的模块

@@ -15,5 +15,6 @@
  */
 /**
  * Contains cache decorators.
+ * 这里全都是PerpetualCache的装饰类，在其基础上做了扩展
  */
 package org.apache.ibatis.cache.decorators;
