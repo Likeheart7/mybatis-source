@@ -1,13 +1,16 @@
 package com.chenx.learning;
 
+import com.chenx.learning.dao.CustomerMapper;
 import com.chenx.learning.pojo.Address;
 import org.apache.ibatis.reflection.Reflector;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
 
 public class CodeTest {
     @Test
@@ -26,4 +29,11 @@ public class CodeTest {
         pingQuerySet.close();
         resultSet.close();
     }
+
+    @Test
+    public void testGetParamAnno() throws NoSuchMethodException {
+        Method method = CustomerMapper.class.getMethod("find", long.class);
+        System.out.println(Arrays.toString(method.getParameterAnnotations()));
+    }
+
 }
