@@ -23,6 +23,7 @@
         <typeAlias type="com.chenx.learning.pojo.Address" alias="Address"/>
     </typeAliases>
 
+
     <!--环境配置，default表示默认选择的环境-->
     <environments default="dev">
         <environment id="dev">

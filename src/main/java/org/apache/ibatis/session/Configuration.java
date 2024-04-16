@@ -112,7 +112,7 @@ public class Configuration {
     protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
     protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
 
-    // properties标签中心信息
+    // properties标签中的信息
     protected Properties variables = new Properties();
     // 反射工厂
     protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
@@ -172,6 +172,7 @@ public class Configuration {
      * A map holds cache-ref relationship. The key is the namespace that
      * references a cache bound to another namespace and the value is the
      * namespace which the actual cache is bound to.
+     * 该属性是namespace之间的引用关系，通过绑定该关系，可以实现多个namespace之间共享二级缓存
      */
     protected final Map<String, String> cacheRefMap = new HashMap<>();
 
