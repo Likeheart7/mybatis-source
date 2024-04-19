@@ -17,13 +17,14 @@ public class DaoUtils {
         InputStream inputStream = null;
         try {
             inputStream = Resources.getResourceAsStream(resource);
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("read mybatis-config.xml failed");
             e.printStackTrace();
             System.exit(1);
         }
 //        在build方法内部关闭了inputStream，无需在此处手动关闭
 //        根据加载的mybatis-config.xml配置文件，创建SqlSessionFactory对象
+//        build方法内，会触发MyBatis加载的全流程
         factory = new SqlSessionFactoryBuilder()
                 .build(inputStream);
     }

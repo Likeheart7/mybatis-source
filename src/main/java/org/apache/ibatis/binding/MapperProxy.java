@@ -32,7 +32,8 @@ import java.util.Map;
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
- * 代理mapper的对象本身，即实现InvocationHandler的类
+ * 代理mapper的对象本身，即实现InvocationHandler的类，这个就是Mybatis中代理mapper对象的代理类，通过MapperProxyFactory来生成代理类
+ * MapperProxyFactory中会调用Proxy.newProxyInstance来生成代理对象
  */
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 

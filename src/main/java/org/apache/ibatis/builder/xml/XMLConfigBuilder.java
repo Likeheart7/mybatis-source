@@ -45,13 +45,14 @@ import java.util.Properties;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
- * 解析mybatis-config.xml文件，一部分功能来自BaseBuilder
+ * 解析mybatis-config.xml文件，将解析结果存入Configuration对象
+ * 一部分功能来自BaseBuilder
  */
 public class XMLConfigBuilder extends BaseBuilder {
 
     // 标识是否已经解析完mybatis-config.xml文件
     private boolean parsed;
-    // XML解析器
+    // XML解析器，用来解析mybatis-config.xml文件的
     private final XPathParser parser;
     // 标签定义的环境名称
     private String environment;
@@ -83,6 +84,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
+        // 这里创建的这个Configuration对象就是全局唯一的配置对象
         super(new Configuration());
         ErrorContext.instance().resource("SQL Mapper Configuration");
         this.configuration.setVariables(props);

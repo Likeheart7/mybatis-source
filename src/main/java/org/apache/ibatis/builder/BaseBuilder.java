@@ -32,12 +32,12 @@ import java.util.regex.Pattern;
  * @author Clinton Begin
  */
 public abstract class BaseBuilder {
-    // 最终的全局配置对象
+    // 最终的全局唯一的配置对象
     protected final Configuration configuration;
     // 下面这两个成员变量的值都是来自configuration的，所以都是全局唯一的
-    // 别名配置
+    // 别名注册中心
     protected final TypeAliasRegistry typeAliasRegistry;
-    // 自定义的类型处理器
+    // 类型处理器注册中心
     protected final TypeHandlerRegistry typeHandlerRegistry;
 
     public BaseBuilder(Configuration configuration) {
@@ -139,6 +139,7 @@ public abstract class BaseBuilder {
         return resolveTypeHandler(javaType, typeHandlerType);
     }
 
+
     protected TypeHandler<?> resolveTypeHandler(Class<?> javaType, Class<? extends TypeHandler<?>> typeHandlerType) {
         if (typeHandlerType == null) {
             return null;
@@ -153,7 +154,7 @@ public abstract class BaseBuilder {
     }
 
     /**
-     * 获取别名或全限定类名对应的类
+     * 获取别名或全限定类名对应的类，依赖typeAliasRegistry实现
      */
     protected <T> Class<? extends T> resolveAlias(String alias) {
         return typeAliasRegistry.resolveAlias(alias);

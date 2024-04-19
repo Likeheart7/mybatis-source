@@ -20,6 +20,7 @@ package org.apache.ibatis.mapping;
  * It creates the SQL that will be passed to the database out of the input parameter received from the user.
  *
  * @author Clinton Begin
+ * DynamicSqlSource、RowSqlSource是两个主要子类，如果是只包含了“#{}”占位符，也不是动态 SQL
  */
 public interface SqlSource {
 
