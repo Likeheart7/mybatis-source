@@ -23,7 +23,12 @@
         <typeAlias type="com.chenx.learning.pojo.Address" alias="Address"/>
     </typeAliases>
 
-
+    <plugins>
+        <plugin interceptor="com.chenx.learning.plugin.DemoPlugin">
+            <!--初始化拦截器属性-->
+            <property name="logLevel" value="1"/>
+        </plugin>
+    </plugins>
     <!--环境配置，default表示默认选择的环境-->
     <environments default="dev">
         <environment id="dev">
@@ -48,4 +53,5 @@
         <mapper resource="mapper/OrderMapper.xml"/>
         <mapper resource="mapper/AddressMapper.xml"/>
     </mappers>
+
 </configuration>
