@@ -102,7 +102,7 @@ public class Configuration {
     protected Class<? extends Log> logImpl;
     protected Class<? extends VFS> vfsImpl;
     protected Class<?> defaultSqlProviderType;
-    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION; // 决定一级缓存是sqlsession级别的还是statement级别的，默认sqlsession
     protected JdbcType jdbcTypeForNull = JdbcType.OTHER;
     protected Set<String> lazyLoadTriggerMethods = new HashSet<>(Arrays.asList("equals", "clone", "hashCode", "toString"));
     protected Integer defaultStatementTimeout;

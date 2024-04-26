@@ -10,11 +10,22 @@
         <result property="country" column="country"/>
         <result property="customerId" column="customer_id"/>
     </resultMap>
+    <update id="updateBatch">
+        update t_customer
+        set name = "xing"
+        where id = 1;
+        update t_address
+        set street = "洞山街道"
+        where id = 2;
+    </update>
     <select id="find" resultMap="addressMap">
-        SELECT * FROM t_address WHERE id = #{id}
+        SELECT *
+        FROM t_address
+        WHERE id = #{id}
     </select>
     <select id="findAll" resultMap="addressMap">
-        SELECT * FROM t_address
+        SELECT *
+        FROM t_address
         WHERE customer_id = #{customerId:INTEGER}
     </select>
     <!-- 定义select语句，AddressMapper接口中的findByOrderId()方法会执行该SQL，
