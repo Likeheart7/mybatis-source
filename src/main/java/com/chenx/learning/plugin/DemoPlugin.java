@@ -23,6 +23,13 @@ import java.sql.Connection;
 public class DemoPlugin implements Interceptor {
     private int logLevel;
 
+    /**
+     * 给sql加上limit 1, 1子句
+     *
+     * @param invocation
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         RoutingStatementHandler target = (RoutingStatementHandler) invocation.getTarget();
@@ -31,7 +38,7 @@ public class DemoPlugin implements Interceptor {
         System.out.println("原始sql： " + originSql);
         Field sql = BoundSql.class.getDeclaredField("sql");
         sql.setAccessible(true);
-        sql.set(boundSql, originSql + " limit 1, 1");
+//        sql.set(boundSql, originSql + " limit 1, 1");
         System.out.println(boundSql.getSql());
         System.out.println("查询开始执行");
         return invocation.proceed();

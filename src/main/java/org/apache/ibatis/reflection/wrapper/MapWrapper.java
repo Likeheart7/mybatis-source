@@ -27,6 +27,7 @@ import java.util.Map;
 /**
  * @author Clinton Begin
  * ObjectWrapper针对Map的实现
+ * 类似BeanWrapper，让Map类型暴露出更多的便于使用的方法
  */
 public class MapWrapper extends BaseWrapper {
 

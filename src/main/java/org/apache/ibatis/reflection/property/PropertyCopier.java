@@ -38,7 +38,7 @@ public final class PropertyCopier {
      */
     public static void copyBeanProperties(Class<?> type, Object sourceBean, Object destinationBean) {
         Class<?> parent = type;
-        // 知道parent是null结束，递归到是Object类
+        // 直到parent是null结束
         while (parent != null) {
             final Field[] fields = parent.getDeclaredFields();
             for (Field field : fields) {
@@ -57,7 +57,7 @@ public final class PropertyCopier {
                 } catch (Exception e) {
                     // Nothing useful to do, will only fail on final fields, which will be ignored.
                     //          只有在给final修饰的成员变量拷贝值时才会来到这里，该类属性的值在拷贝时被忽略
-//          其余各种异常进入这里都被忽略
+                    //          其余各种异常进入这里都被忽略
                 }
             }
 //            当前类的属性拷贝完之后，将parent转为其父类，对其从父类继承的属性进行拷贝，直到父类为null(只有Object的父类是null)

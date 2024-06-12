@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * 默认的ReflectorFactory实现，用来缓存Reflector，提升Reflector的初始速度。
+ * ReflectorFactory默认实现，用来缓存Reflector，提升Reflector的初始速度。
  * 核心方法是{@link #findForClass(Class)}
  */
 public class DefaultReflectorFactory implements ReflectorFactory {
@@ -38,6 +38,7 @@ public class DefaultReflectorFactory implements ReflectorFactory {
 
     /**
      * 用于设置是否允许缓存Reflector
+     *
      * @param classCacheEnabled true：允许缓存， false：禁止缓存
      */
     @Override
@@ -45,9 +46,14 @@ public class DefaultReflectorFactory implements ReflectorFactory {
         this.classCacheEnabled = classCacheEnabled;
     }
 
+    /**
+     * 核心方法
+     *
+     * @param type Reflector解析的类型
+     */
     @Override
     public Reflector findForClass(Class<?> type) {
-        // 如果允许缓存，就从reflectorMap获取返回，如果里面没有就创建一个然后返回，这样下次使用就可以从reflectorMap中拿，提高创建速度
+        // 如果允许缓存，就从reflectorMap获取返回，如果里面没有就创建一个然后返回，这样下次使用就可以从reflectorMap中拿，提高速度
         if (classCacheEnabled) {
             // synchronized (type) removed see issue #461
             return reflectorMap.computeIfAbsent(type, Reflector::new);

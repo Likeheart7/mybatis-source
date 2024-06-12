@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author Clinton Begin
  * 所有对象包装器的父类接口
- * 封装的是对象的元信息
+ * 封装对象的元信息
  */
 public interface ObjectWrapper {
 

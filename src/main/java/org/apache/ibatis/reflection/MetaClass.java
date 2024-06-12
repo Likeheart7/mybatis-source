@@ -33,6 +33,7 @@ import java.util.Collection;
  */
 public class MetaClass {
 
+    // 反射工厂
     private final ReflectorFactory reflectorFactory;
     private final Reflector reflector;
 

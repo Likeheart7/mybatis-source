@@ -46,7 +46,7 @@ public class ParamNameResolver {
      * <li>aMethod(int a, int b) -&gt; {{0, "0"}, {1, "1"}}</li>
      * <li>aMethod(int a, RowBounds rb, int b) -&gt; {{0, "0"}, {2, "1"}}</li>
      * </ul>
-     * 方法入参的参数次序表。键为参数次序，值为参数名称或者参数@Param注解的值
+     * 方法入参的参数次序表。键为参数次序，值为参数名称或者@Param注解的值
      * 不包括RowBounds和ResultHandler类型
      */
     private final SortedMap<Integer, String> names;

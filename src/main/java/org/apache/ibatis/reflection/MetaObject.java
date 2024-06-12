@@ -25,13 +25,20 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
+ * 一个针对普通Object对象的反射包装类
  */
 public class MetaObject {
 
+    // 被包装的原始对象
     private final Object originalObject;
+    // 下面这些为了 便于进行各种反射操作
+    // 对象包装器
     private final ObjectWrapper objectWrapper;
+    // 对象工厂
     private final ObjectFactory objectFactory;
+    // 对象包装器工厂
     private final ObjectWrapperFactory objectWrapperFactory;
+    // 反射工厂
     private final ReflectorFactory reflectorFactory;
 
     private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
@@ -107,6 +114,7 @@ public class MetaObject {
 
     /**
      * 根据名称获取属性值
+     *
      * @param name 属性名称
      */
     public Object getValue(String name) {

@@ -21,6 +21,7 @@ import java.util.Locale;
 
 /**
  * @author Clinton Begin
+ * 通过getter/setter获取属性名称，该类正常运作的前提是getter/setter符合JavaBean规范
  */
 public final class PropertyNamer {
 
@@ -30,6 +31,7 @@ public final class PropertyNamer {
 
     /**
      * 将获取的方法名去除get/is且首字母小写 getAddressInfo -> addressInfo
+     *
      * @param name 对应getter的方法名
      * @return 处理后的字符串
      */
@@ -53,10 +55,20 @@ public final class PropertyNamer {
         return isGetter(name) || isSetter(name);
     }
 
+    /**
+     * 根绝是否是get/is开头来判断是不是getter方法
+     *
+     * @param name 名称
+     */
     public static boolean isGetter(String name) {
         return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
     }
 
+    /**
+     * 根据是不是set开头判断是不是setter
+     *
+     * @param name 名称
+     */
     public static boolean isSetter(String name) {
         return name.startsWith("set") && name.length() > 3;
     }

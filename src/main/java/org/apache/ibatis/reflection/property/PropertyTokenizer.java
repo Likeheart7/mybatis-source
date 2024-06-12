@@ -20,7 +20,7 @@ import java.util.Iterator;
 /**
  * @author Clinton Begin
  * 解析由“.”和“[]”构成的表达式，类似user[uId].name。PropertyTokenizer 继承了 Iterator 接口，可以迭代处理嵌套多层表达式。
- * 是一个属性分词器，将变量名，索引名，属性名拆分出来
+ * 一个属性分词器，将变量名，索引名，属性名拆分出来
  */
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
     // user[uId].name的拆分结果为

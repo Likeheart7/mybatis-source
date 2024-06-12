@@ -24,7 +24,8 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * ObjectWrapper针对Collection的实现
+ * ObjectWrapper针对Collection的实现,
+ * 类似BeanWrapper，让Collection类型暴露出更多的便于使用的方法
  */
 public class CollectionWrapper implements ObjectWrapper {
 

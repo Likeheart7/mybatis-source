@@ -24,12 +24,13 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
- * ObjectWrapper的抽象实现
+ * ObjectWrapper的抽象实现，作为BeanWrapper、CollectionWrapper、MapWrapper的共有父类，提供了一些共用的基础方法
  * 主要实现了 resolveCollection()、getCollectionValue() 和 setCollectionValue() 三个针对集合对象的处理方法
  */
 public abstract class BaseWrapper implements ObjectWrapper {
     // 获取对象属性时，没有参数传入时的默认值
     protected static final Object[] NO_ARGUMENTS = new Object[0];
+    // 被包装的对象的元对象
     protected final MetaObject metaObject;
 
     protected BaseWrapper(MetaObject metaObject) {

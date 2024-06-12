@@ -15,62 +15,45 @@
  */
 package org.apache.ibatis.reflection;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.ReflectPermission;
-import java.lang.reflect.Type;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.ibatis.reflection.invoker.AmbiguousMethodInvoker;
-import org.apache.ibatis.reflection.invoker.GetFieldInvoker;
-import org.apache.ibatis.reflection.invoker.Invoker;
-import org.apache.ibatis.reflection.invoker.MethodInvoker;
-import org.apache.ibatis.reflection.invoker.SetFieldInvoker;
+import org.apache.ibatis.reflection.invoker.*;
 import org.apache.ibatis.reflection.property.PropertyNamer;
+
+import java.lang.reflect.*;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
  *
  * @author Clinton Begin
+ * ⭐⭐Reflection包中最重要的类⭐⭐
  * 通过将Class封装成一个Reflector对象，在对象中缓存Class的元数据信息，提高反射的执行效率
  */
 public class Reflector {
 
-    // 要被反射解析的类
+    // 被反射解析的类
     private final Class<?> type;
-    // 能够读的属性列表，即有get方法的属性列表
+    // 有get方法的属性列表
     private final String[] readablePropertyNames;
-    // 能够写的属性列表，即有set方法的属性列表
+    // 有set方法的属性列表
     private final String[] writablePropertyNames;
-    //  setter 映射表，键是属性名，值是对应的setter方法
+    //  setter 映射表，键是属性名，值是对应的setter
     private final Map<String, Invoker> setMethods = new HashMap<>();
-    //  getter 映射表，键是属性名，值是对应的getter方法
+    //  getter 映射表，键是属性名，值是对应的getter
     private final Map<String, Invoker> getMethods = new HashMap<>();
-    // set方法输入类型。键为属性名，值为对应的该属性的set方法的类型（实际为set方法的第一个参数的类型）
+    // set方法输入类型。键为属性名，值为对应的该属性的setter的第一个参数的类型
     private final Map<String, Class<?>> setTypes = new HashMap<>();
-    // get方法返回类型映射表。键为属性名，值为对应的该属性的set方法的类型（实际为set方法的返回值类型）
+    // get方法返回类型映射表。键为属性名，值为对应的该属性的getter的返回值类型
     private final Map<String, Class<?>> getTypes = new HashMap<>();
     // 默认构造方法
     private Constructor<?> defaultConstructor;
 
-    // 大小写无关的属性映射表。键为属性名全大写值，值为属性名
+    // 大小写无关的属性映射表。键为属性名全大写，值为属性名
     private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
-    //    构造方法，通过传入一个类型来实现
+    //    构造方法，通过传入一个类型来实现，是该类的入口
     public Reflector(Class<?> clazz) {
 //        记录当前对象管理的类型
         type = clazz;
@@ -86,7 +69,7 @@ public class Reflector {
         readablePropertyNames = getMethods.keySet().toArray(new String[0]);
 //        保存有setter方法的属性的名称
         writablePropertyNames = setMethods.keySet().toArray(new String[0]);
-//        将这些可读/可写的属性保存到map里
+//        将这些可读/可写的属性保存到大小写无关的属性映射表 caseInsensitivePropertyMap 中
         for (String propName : readablePropertyNames) {
             caseInsensitivePropertyMap.put(propName.toUpperCase(Locale.ENGLISH), propName);
         }
@@ -121,6 +104,7 @@ public class Reflector {
         // 过滤getter，条件是1：无参 2：是get/is开头，放入conflictingGetters，键是方法名去掉get/is后将首字母小写的字符串
         Arrays.stream(methods).filter(m -> m.getParameterTypes().length == 0 && PropertyNamer.isGetter(m.getName()))
                 .forEach(m -> addMethodConflict(conflictingGetters, PropertyNamer.methodToProperty(m.getName()), m));
+        // 如果一个属性对应多个getter，找出最合适的那个
         resolveGetterConflicts(conflictingGetters);
     }
 
@@ -224,7 +208,7 @@ public class Reflector {
             boolean isSetterAmbiguous = false;
             Method match = null;
             for (Method setter : setters) {
-                // 如果参数类型与对应getter的返回类型相同，就选择它（前提是处理getter时没有歧义）
+                // 如果setter参数类型与对应getter的返回类型相同，就选择它（前提是处理getter时没有歧义）
                 if (!isGetterAmbiguous && setter.getParameterTypes()[0].equals(getterType)) {
                     // should be the best match
                     match = setter;
@@ -426,6 +410,7 @@ public class Reflector {
     /**
      * Checks whether can control member accessible.
      * 判断能否修改成员的访问权限
+     *
      * @return If can control member accessible, it return {@literal true}
      * @since 3.5.0
      */

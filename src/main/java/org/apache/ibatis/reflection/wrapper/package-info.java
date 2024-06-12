@@ -12,6 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *    该包中的类使用装饰器模式对各种类型的对象（基本Bean对象、集合对象、Map对象）进一步封装，增加一些功能以便于使用。
  */
 /**
  * Object wrappers.
