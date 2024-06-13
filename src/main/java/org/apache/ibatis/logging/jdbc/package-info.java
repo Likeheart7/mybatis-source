@@ -14,6 +14,8 @@
  * limitations under the License.
  * <p>
  * Logging proxies that logs any JDBC statement.
- * 这个包的作用是将数据库操作设计的信息打印到日志中，一般只在测试环境中使用，否则可能影响系统性能
+ * Mybatis本身不负责数据库的操作，由JDBC负责，而JDBC的日志和Mybatis的日志是独立的
+ * 这个包的作用是将数据库操作的信息打印到日志中
+ * 一般只在测试环境中使用，否则可能影响系统性能
  */
 package org.apache.ibatis.logging.jdbc;

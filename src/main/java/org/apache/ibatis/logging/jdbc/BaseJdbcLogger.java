@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  * @author Clinton Begin
  * @author Eduardo Macarron
  * 本包下所有Logger的父类
+ * 详细解析以 {@link ConnectionLogger} 为例
  */
 public abstract class BaseJdbcLogger {
 

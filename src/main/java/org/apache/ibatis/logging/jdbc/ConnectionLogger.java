@@ -30,7 +30,7 @@ import java.sql.Statement;
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
- * 连接的日志管理，这里实现了InvocationHandler，说明会使用动态代理
+ * Connection的日志管理，实现了InvocationHandler，为了JDBC的Connection相关的日志打印
  */
 public final class ConnectionLogger extends BaseJdbcLogger implements InvocationHandler {
 
@@ -42,6 +42,9 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
         this.connection = conn;
     }
 
+    /**
+     * 当使用的是Connection的代理类时，所有该Connection类的调用都会进入该invoke方法
+     */
     @Override
     public Object invoke(Object proxy, Method method, Object[] params)
             throws Throwable {
@@ -57,12 +60,12 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
                     debug(" Preparing: " + removeExtraWhitespace((String) params[0]), true);
                 }
                 PreparedStatement stmt = (PreparedStatement) method.invoke(connection, params);
-                // 获取PreparedStatement对象并为其创建代理对象
+                // 传递给下游的PrepareStatement对象也是被代理的。用于管理JDBC PreparedStatement的日志
                 stmt = PreparedStatementLogger.newInstance(stmt, statementLog, queryStack);
                 return stmt;
-            } else if ("createStatement".equals(method.getName())) {
-                // 如果是createStatement()也创建个代理对象
+            } else if ("createStatement".equals(method.getName())) {    // 如果是createStatement()也创建个代理对象
                 Statement stmt = (Statement) method.invoke(connection, params);
+                // 传递给下游的Statement对象也是被代理的。用于管理JDBC Statement的日志
                 stmt = StatementLogger.newInstance(stmt, statementLog, queryStack);
                 return stmt;
             } else {
@@ -75,6 +78,8 @@ public final class ConnectionLogger extends BaseJdbcLogger implements Invocation
 
     /**
      * Creates a logging version of a connection.
+     * 查看 {@link org.apache.ibatis.executor.BaseExecutor#getConnection(Log)} 的代码逻辑
+     * 可以发现，当开启Debug日志级别时，为了打印出JDBC的Connection相关日志，使用的是ConnectionLogger.newInstance()获取的代理类实例
      *
      * @param conn         the original connection
      * @param statementLog the statement log

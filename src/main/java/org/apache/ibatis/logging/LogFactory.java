@@ -38,6 +38,7 @@ public final class LogFactory {
         tryImplementation(LogFactory::useLog4J2Logging);
         tryImplementation(LogFactory::useLog4JLogging);
         tryImplementation(LogFactory::useJdkLogging);
+        // 不打印日志作为兜底方案
         tryImplementation(LogFactory::useNoLogging);
     }
 
@@ -93,7 +94,7 @@ public final class LogFactory {
         // 如果logConstructor不为空，表示已经确定引用的日志框架，直接跳过方法
         if (logConstructor == null) {
             try {
-                runnable.run();
+                runnable.run(); // 这里调用的是run方法不是start方法
             } catch (Throwable t) {
                 // ignore
             }
@@ -102,7 +103,7 @@ public final class LogFactory {
 
     private static void setImplementation(Class<? extends Log> implClass) {
         try {
-            // 获取这个类的构造方法
+            // 获取这个类的有参构造方法
             Constructor<? extends Log> candidate = implClass.getConstructor(String.class);
             // 创建该类实例
             Log log = candidate.newInstance(LogFactory.class.getName());
