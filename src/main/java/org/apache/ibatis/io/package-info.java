@@ -15,5 +15,8 @@
  */
 /**
  * Utilities to read resources.
+ * 该包主要完成Mybatis中输入/输出相关操作。
+ * 包括对磁盘文件的读写，和对内存中类文件的操作
+ * 看上去主要还是和加载类文件相关
  */
 package org.apache.ibatis.io;
