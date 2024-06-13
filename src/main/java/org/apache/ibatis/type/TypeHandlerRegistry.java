@@ -36,21 +36,22 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
- * 管理所有的TypeHandler实例
+ * 类型处理器注册表，管理所有的TypeHandler实例
  */
 public final class TypeHandlerRegistry {
     // jdbc类型和类型处理器TypeHandler的映射
     private final Map<JdbcType, TypeHandler<?>> jdbcTypeHandlerMap = new EnumMap<>(JdbcType.class);
     // Java类型和Map<JdbcType, TypeHandler<?>>的映射
-    // 为什么要用两层Map嵌套？ 因为一个Java类型可能对应多个jdbc类型，如String可能对应char、varchar、text等，针对String类型可能有多种可选的TypeHandler
+    // 之所以用两层Map嵌套？，因为一个Java类型可能对应多个jdbc类型，如String可能对应char、varchar、text等，针对String类型可能有多种可选的TypeHandler
     private final Map<Type, Map<JdbcType, TypeHandler<?>>> typeHandlerMap = new ConcurrentHashMap<>();
+    // 未知的类型处理器
     private final TypeHandler<Object> unknownTypeHandler;
     // 键是typeHandler.getClass()，值是对应的实例，记录了所有TypeHandler
     private final Map<Class<?>, TypeHandler<?>> allTypeHandlersMap = new HashMap<>();
 
     // 空的jdbc类型到TypeHandler的映射，用于在typeHandlerMap中标识一个Java类型没有对应的类型处理器
     private static final Map<JdbcType, TypeHandler<?>> NULL_TYPE_HANDLER_MAP = Collections.emptyMap();
-    // 默认的美剧类型处理器
+    // 默认的枚举类型处理器
     private Class<? extends TypeHandler> defaultEnumTypeHandler = EnumTypeHandler.class;
 
     /**
@@ -115,7 +116,6 @@ public final class TypeHandlerRegistry {
 
          */
         // 这一步将这个注册到allTypeHandlersMap中
-        // question：感觉这一步没有意义，因为其他的在注册StringTypeHandler的时候也会将他注册到allTypeHandlerMap中
         register(String.class, new StringTypeHandler());
         // StringTypeHandler可以处理String到char、varchar、longvarchar类型的转换
         register(String.class, JdbcType.CHAR, new StringTypeHandler());
@@ -266,7 +266,7 @@ public final class TypeHandlerRegistry {
         Map<JdbcType, TypeHandler<?>> jdbcHandlerMap = getJdbcHandlerMap(type);
         TypeHandler<?> handler = null;
         if (jdbcHandlerMap != null) {
-//            根据jdbc类型查找对应的typeHandler对象
+            // 根据jdbc类型查找对应的typeHandler对象
             handler = jdbcHandlerMap.get(jdbcType);
             if (handler == null) {
                 // 没有对应的TypeHandler实例，则使用null对应的TypeHandler

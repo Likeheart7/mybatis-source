@@ -25,7 +25,7 @@ import java.util.*;
 
 /**
  * @author Clinton Begin
- * 维护别名配置的类
+ * 类型别名注册表，用于定义默认别名和自定义别名
  */
 public class TypeAliasRegistry {
     //记录了别名和Java类型之间的对应关系

@@ -30,7 +30,7 @@ import java.sql.SQLException;
  * {@link CallableStatement#wasNull()} method for handling the SQL {@code NULL} value.
  * In other words, {@code null} value handling should be performed on subclass.
  * </p>
- * 实现一些TypeHandler的公共逻辑
+ * 类型处理器的基础实现，实现一些TypeHandler的公共逻辑，采用了模板方法模式
  * 具体实现子类以{@link org.apache.ibatis.type.LongTypeHandler} 为例
  *
  * @author Clinton Begin
@@ -110,6 +110,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
         }
     }
 
+
     @Override
     public T getResult(CallableStatement cs, int columnIndex) throws SQLException {
         try {
@@ -119,10 +120,19 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
         }
     }
 
+    /**
+     * 向PreparedStatement对象中的指定变量位置写入一个不为null的值
+     *
+     * @param ps
+     * @param i         指定变量位置
+     * @param parameter 参数值
+     * @param jdbcType  JDBC类型
+     */
     public abstract void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
     /**
      * Gets the nullable result.
+     * 从ResultSet中按照字段名读出一个可能为null的数据
      *
      * @param rs         the rs
      * @param columnName Colunm name, when configuration <code>useColumnLabel</code> is <code>false</code>
@@ -131,8 +141,21 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
      */
     public abstract T getNullableResult(ResultSet rs, String columnName) throws SQLException;
 
+
+    /**
+     * 从 ResultSet 中按照字段编号读出一个可能为null的数据
+     *
+     * @param rs          结果集
+     * @param columnIndex 字段索引
+     */
     public abstract T getNullableResult(ResultSet rs, int columnIndex) throws SQLException;
 
+    /**
+     * 从CallableStatement中按照字段编号读出一个可能为NULL的数据
+     *
+     * @param cs
+     * @param columnIndex 字段索引
+     */
     public abstract T getNullableResult(CallableStatement cs, int columnIndex) throws SQLException;
 
 }

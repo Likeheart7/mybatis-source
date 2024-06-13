@@ -24,6 +24,7 @@ import java.sql.SQLException;
  * @author Clinton Begin
  * 处理Long类型的TypeHandler，内部就是通过调用PreparedStatement的方法实现的。
  * 其他的TypeHandler也是相似的逻辑
+ * 泛型参数是Long表示其方法给出的就是Long类型的结果
  */
 public class LongTypeHandler extends BaseTypeHandler<Long> {
 
