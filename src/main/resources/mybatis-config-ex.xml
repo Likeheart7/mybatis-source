@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--对应Configuration类，由XMLConfigBuilder解析-->
+<configuration>
+    <!--放在Properties类型的variables属性里卖弄用来替换xml文件里面的${}占位符的-->
+    <properties>
+        <property name="jdbc.username" value="{username}"/>
+    </properties>
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+    <!--对应TypeAliasRegistry类-->
+    <typeAliases>
+        <typeAlias type="com.chenx.learning.pojo.Address" alias="address"/>
+        <package name="com.chenx.learning"/>    <!--由TypeAliasRegistry解析-->
+    </typeAliases>
+    <!--对应TypeHandlerRegistry类-->
+    <typeHandlers>
+        <typeHandler handler="com.chenx.learning.pojo.XxxHandler"/>
+    </typeHandlers>
+    <!--对应ObjectFactory类-->
+    <objectFactory type="com.chenx.learning.XxxObjectFactory"/>
+    <!--对应ObjectWrapperFactory类-->
+    <objectWrapperFactory type="com.chenx.learning.Xxx"/>
+    <!--对应ReflectorFactory类-->
+    <reflectorFactory type="Xxx"/>
+    <plugins>
+        <plugin interceptor="com.chenx.learning.Xxxxx"> <!--对应Interceptor类-->
+            <property name="dialect" value="mysql"/>
+        </plugin>
+    </plugins>
+
+    <environments default="dev">
+        <!--对应Environment类-->
+        <environment id="dev">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="url" value="db_path"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--对应DatabaseIdProvider类-->
+    <databaseIdProvider type="com.chenx.learning.TestDatabaseIdProvider"/>
+    <mappers>
+        <mapper resource="com/chenx/learning/XxxDao.xml"/> <!--由XMlMapperBuilder解析-->
+        <package name="com.chenx.learning"/>
+    </mappers>
+</configuration>

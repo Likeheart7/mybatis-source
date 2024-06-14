@@ -1,0 +1,37 @@
+<!--mapper.xml示例-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd//mybatis-3-mapper.dtd">
+<!--由XMLMapperBuilder类解析-->
+<mapper namespace="com.chenx.learning.dao.XxxMapper">
+    <!--由CacheRefResolver解析-->
+    <cache-ref namespace="com.chenx.learning.dao"/>
+    <!--对应Cache类-->
+    <cache eviction="=FIFO" flushInterval="60000"/>
+
+    <parameterMap id="userParam01" type="User">
+        <!--对应ParameterMap类-->
+        <parameter property="name" javaType="String"/>
+    </parameterMap>
+
+    <!--对应ResultMap类-->
+    <resultMap id="UserMapFull" type="com.chenx.learning.pojo.User">
+        <!--对应ResultMapping类-->
+        <result property="id" column="id" typeHandler="com.chenx.learning.XxxTypeHandler"/>
+        <!--对应Discriminator类-->
+        <discriminator javaType="int" column="sex">
+            <case value="0" resultMap="boyUserMap"/>
+        </discriminator>
+    </resultMap>
+    <!--对应MappedStatement对象，由XMLStatementBuilder解析-->
+    <select id="selectById" resultMap="userMap">
+        <!--对应SqlSource类，由SqlSourceBuilder解析-->
+        select * from user
+        where id in
+        <!--对应SqlNode类，由自身解析-->
+        <foreach collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+</mapper>
