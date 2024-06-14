@@ -146,7 +146,8 @@ public class Configuration {
     // 语言驱动注册表
     protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
-    // 映射的数据库操作语句
+    // 所有映射文件中的数据库操作节点
+    // 键是SQL语句的namespace值.id（如果语句没有歧义，还会存放一个键为语句id的键值对）。
     protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection")
             .conflictMessageProducer((savedValue, targetValue) ->
                     ". please check " + savedValue.getResource() + " and " + targetValue.getResource());

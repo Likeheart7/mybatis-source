@@ -31,7 +31,7 @@ import java.util.*;
 public class MapperRegistry {
     // 指向全局唯一的Configuration对象，其中是MyBatis的配置信息
     private final Configuration config;
-    // 所有解析到的Mapper接口，MapperProxyFactory工厂对象之间的映射关系
+    // 所有解析到的Mapper接口，MapperProxyFactory工厂对象之间的映射关系，也就是每个Mapper接口用哪个MapperProxyFactory来获取代理对象
     // value是MapperProxyFactory，用来生成代理对象
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
@@ -40,20 +40,21 @@ public class MapperRegistry {
     }
 
     /**
-     * 获取Mapper的代理对象
+     * 通过Mapper接口类型，获取对应的代理对象
      *
      * @param type       类型
      * @param sqlSession
-     * @return mapper的代理对象
+     * @return mapper解耦的代理对象
      */
     @SuppressWarnings("unchecked")
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        // 从knownMappers中找出该Mapper接口对应的MapperProxyFactory
         final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
         if (mapperProxyFactory == null) {
             throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
         }
         try {
-            // 实际上是调用newInstance创建代理对象的
+            // 调用MapperProxyFactory.newInstance创建代理对象MapperProxy，转为对应的Mapper接口类型T返回
             return mapperProxyFactory.newInstance(sqlSession);
         } catch (Exception e) {
             throw new BindingException("Error getting mapper instance. Cause: " + e, e);

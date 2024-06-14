@@ -14,6 +14,9 @@
  *    limitations under the License.
  */
 /**
+ * 主要做了两件事情：
+ *   1. 通过代理类接管JDBC的Connection、PreparedStatement等类，实现JDBC内类的日志打印
+ *   2. 通过一系列适配器接口，提供不同的日志框架的适配。
  * Base package for logging.
  */
 package org.apache.ibatis.logging;

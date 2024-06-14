@@ -45,11 +45,12 @@ import java.util.Optional;
  * @author Kazuki Shimizu
  * 最终执行SQL的地方。
  * 这里记录了Mapper接口中的对应方法
+ * 每个MapperMethod对象都对应一个数据库操作节点，调用这里的execute方法就触发对应的SQL语句
  */
 public class MapperMethod {
     // 维护了关联的SQL语句信息
     private final SqlCommand command;
-    // 维护了Mapper接口中方法的相关关系
+    // 维护了Mapper接口中方法的相关信息
     private final MethodSignature method;
 
     public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
@@ -95,11 +96,11 @@ public class MapperMethod {
                     // 内部用了sqlSession.select()，然后浇给ResultHandler处理
                     executeWithResultHandler(sqlSession, args);
                     result = null;
-                    // 返回值时集合的情况
+                    // 返回值是集合的情况
                 } else if (method.returnsMany()) {
                     // 底层是selectList()
                     result = executeForMany(sqlSession, args);
-                    // 返回值时map
+                    // 返回值是map
                 } else if (method.returnsMap()) {
                     // 底层是selectMap()
                     result = executeForMap(sqlSession, args);
@@ -116,7 +117,7 @@ public class MapperMethod {
                     }
                 }
                 break;
-            // flush就是单纯的提交缓存语句
+            // flush就是单纯的提交缓存语句，清空缓存
             case FLUSH:
                 result = sqlSession.flushStatements();
                 break;
@@ -260,8 +261,11 @@ public class MapperMethod {
 
     }
 
+    /**
+     * 该类指代一条sql语句
+     */
     public static class SqlCommand {
-        // 关联的SQL语句的唯一标识
+        // 关联的SQL语句的唯一标识，通过这个标识持有对应的SQL语句
         private final String name;
         // SQL语句的操作类型（Insert、update、delete、select、flush）
         private final SqlCommandType type;
@@ -302,6 +306,15 @@ public class MapperMethod {
             return type;
         }
 
+        /**
+         * 找出指定接口指定方法对应的MappedStatement对象
+         *
+         * @param mapperInterface 映射接口
+         * @param methodName      映射接口中具体操作方法名
+         * @param declaringClass  操作方法所在的类。一半是映射接口本身，也可能是映射接口的子类
+         * @param configuration   全局配置信息
+         * @return MappedStatement对象
+         */
         private MappedStatement resolveMappedStatement(Class<?> mapperInterface, String methodName,
                                                        Class<?> declaringClass, Configuration configuration) {
             // 接口名称 + “. “ + 方法名 作为标识
@@ -310,9 +323,10 @@ public class MapperMethod {
             if (configuration.hasStatement(statementId)) {
                 return configuration.getMappedStatement(statementId);
             } else if (mapperInterface.equals(declaringClass)) {
+                // 如果上面没有找到对应的MappedStatement对象并且当前已经是映射接口本身，递归已到终点，没有匹配的结果
                 return null;
             }
-            // 如果当前检擦的Mapper接口(mapperInterface)不是定义该方法的接口
+            // 如果当前检查的Mapper接口(mapperInterface)不是定义该方法的接口，递归向父类找，直到找到或到父类本身结束
             for (Class<?> superInterface : mapperInterface.getInterfaces()) {
                 if (declaringClass.isAssignableFrom(superInterface)) {
                     // 尝试顺着 Mapper 接口的继承树进行查找，直至查找成功为止
@@ -327,15 +341,18 @@ public class MapperMethod {
         }
     }
 
+    /**
+     * 指代一个具体方法的签名
+     */
     public static class MethodSignature {
 
         // 下面七个是方法的返回值信息
 
-        private final boolean returnsMany;  // 是否是集合/数组
-        private final boolean returnsMap;   // 是否是map
-        private final boolean returnsVoid;  // 是否为void
-        private final boolean returnsCursor;    //是否为cursor，当返回结果集很大的时候会用，防止内存占用过高
-        private final boolean returnsOptional;  // 是否为Optional
+        private final boolean returnsMany;  // 返回类型是否是集合/数组
+        private final boolean returnsMap;   // 返回类型是否是map
+        private final boolean returnsVoid;  // 返回类型是否为void
+        private final boolean returnsCursor;    // 返回类型是否为cursor，当返回结果集很大的时候会用，防止内存占用过高
+        private final boolean returnsOptional;  // 返回类型是否为Optional
         private final Class<?> returnType;  // 具体的返回类型
         private final String mapKey;    //如果返回值是map，该字段记录作为key的列名
 

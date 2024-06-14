@@ -32,8 +32,10 @@ import java.util.Map;
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
- * 代理mapper的对象本身，即实现InvocationHandler的类，这个就是Mybatis中代理mapper对象的代理类，通过MapperProxyFactory来生成代理类
+ * 代理mapper的对象本身，即实现InvocationHandler的类，这个就是Mybatis中代理mapper接口的代理类，通过MapperProxyFactory来生成代理类
  * MapperProxyFactory中会调用Proxy.newProxyInstance来生成代理对象
+ * 当我们调用一个Mapper接口中的某个方法时，只要将其转换为对对应的MapperMethod对象的execute()方法的执行即可。
+ * 而本类的invoke的返回值是一个封装了对应MapperMethod的MapperMethodInvoker对象，MapperMethodInvoker的实现类PlainMapperInvoker的invoke方法就是调用了内部封装的MapperMethod的execute方法
  */
 public class MapperProxy<T> implements InvocationHandler, Serializable {
 
@@ -48,7 +50,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     private final SqlSession sqlSession;
     // mapper的接口类型，就是这个代理类代理的对象实现的接口类型
     private final Class<T> mapperInterface;
-    // 该Map的键为接口中的方法，值为对应的MapperMethodInvoker对象
+    // 该Map的键为接口中的方法，值为对应的MapperMethodInvoker对象，MapperMethodInvoker内封装对应的MapperMethod对象，其execute方法执行对应的数据库操作节点的SQL语句
     private final Map<Method, MapperMethodInvoker> methodCache;
 
     public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethodInvoker> methodCache) {
@@ -85,15 +87,21 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     }
 
     /**
-     * 代理方法入口
+     * 代理方法
+     *
+     * @param proxy  被代理里的对象
+     * @param method 被代理的方法
+     * @param args   被代理的方法执行的参数
+     * @return 方法执行结果
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
-            // 如果是Object的方法直接调用，不做拦截
+            // 如果是Object的方法直接调用，不做拦截，直接执行
             if (Object.class.equals(method.getDeclaringClass())) {
                 return method.invoke(this, args);
             } else {
+                // 返回的是封装了对应的MapperMethod的MapperMethodInvoker
                 return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
             }
         } catch (Throwable t) {
