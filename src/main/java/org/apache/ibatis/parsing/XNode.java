@@ -29,17 +29,19 @@ import java.util.function.Supplier;
  */
 public class XNode {
 
-    // org.w3c.dom.Node，标识是xml的一个节点
+    // org.w3c.dom.Node，表示是xml的一个节点
     private final Node node;
-    // 节点名称
+    // 节点名称，可以从org.w3c.dom.Node获取
     private final String name;
-    // 节点体
+    // 节点体， 可以从org.w3c.dom.Node获取
     private final String body;
-    // 节点属性
+    // 节点属性 可以从org.w3c.dom.Node获取
     private final Properties attributes;
     // mybatis配置文件中的properties信息
     private final Properties variables;
     // xml解析器
+    // XNode类中封装了自身的解析器。在一个类中封装自己的解析器，这是一种非常常见的做法，
+    // 如此一来这个类不需要外界的帮助便可以解析自身，即获得了自解析能力。提高了内聚性
     private final XPathParser xpathParser;
 
     public XNode(XPathParser xpathParser, Node node, Properties variables) {
@@ -219,10 +221,8 @@ public class XNode {
      * <p>
      * If attribute value is absent, return value that provided from supplier of default value.
      *
-     * @param name
-     *          attribute name
-     * @param defSupplier
-     *          a supplier of default value
+     * @param name        attribute name
+     * @param defSupplier a supplier of default value
      * @return the string attribute
      * @since 3.5.4
      */

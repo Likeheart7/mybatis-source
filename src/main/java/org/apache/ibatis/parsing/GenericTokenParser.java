@@ -17,11 +17,16 @@ package org.apache.ibatis.parsing;
 
 /**
  * @author Clinton Begin
+ * 本类主要提供了占位符的定位功能，然后调用具体的Handler处理 替换
+ * 不止处理XML文件的占位符，SQL语句的解析也会用到
  */
 public class GenericTokenParser {
 
+    // 占位符起始标志
     private final String openToken;
+    // 占位符结束标志
     private final String closeToken;
+    // 占位符处理器
     // 在解析包含${}的sql片段时，这个handler就是BindingTokenParser
     private final TokenHandler handler;
 
@@ -31,6 +36,9 @@ public class GenericTokenParser {
         this.handler = handler;
     }
 
+    /**
+     * 这里主要完成了占位符的定位工作，具体的替换工作交给关联的TokenHandler处理
+     */
     public String parse(String text) {
         if (text == null || text.isEmpty()) {
             return "";

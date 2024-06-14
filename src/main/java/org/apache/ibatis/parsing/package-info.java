@@ -15,5 +15,8 @@
  */
 /**
  * Parsing utils.
+ * 用来解析XML文件的包
+ * xml文件通过dtd或xsd文件定义，Java通过java.xml.xpath包解析
+ * 本包中解析xml最重要的两个类是 XPathParse 和 XNode
  */
 package org.apache.ibatis.parsing;
