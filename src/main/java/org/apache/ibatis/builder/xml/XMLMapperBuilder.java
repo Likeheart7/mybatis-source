@@ -74,19 +74,20 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
 
     /**
-     * 解析mapper.xml的入口方法
+     * 解析mapper.xml映射文件的入口方法，调用来源是XMLConfigBuilder.parse() --> XMLConfigBuilder.parseConfiguration --> XMLConfigBuilder.mapperElement() --> 本方法
      */
     public void parse() {
         // 该节点是否被解析过
         if (!configuration.isResourceLoaded(resource)) {
-            // 解析整个mapper节点，解析mapper.xml的核心方法
+            // 解析整个mapper节点，是解析mapper.xml的核心方法
             configurationElement(parser.evalNode("/mapper"));
             // 添加到已加载的资源Set中，防止重复解析
             configuration.addLoadedResource(resource);
             // 将mapper注册到configuration
             bindMapperForNamespace();
         }
-        //处理失败的resultMap、cache-ref、sql节点
+        //处理失败的resultMap、cache-ref、sql标签节点，可能是暂时性错误
+        // 暂时性错误存放在configuration的incompleteXxx属性中。这种方式是解决无序依赖的方法
         parsePendingResultMaps();
         parsePendingCacheRefs();
         parsePendingStatements();

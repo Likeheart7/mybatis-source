@@ -45,7 +45,7 @@ import java.util.Properties;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
- * 解析mybatis-config.xml文件，将解析结果存入Configuration对象
+ * 解析mybatis-config.xml文件，用解析结果建造一个Configuration对象，即全局配置对象，入口方法是{@link XMLConfigBuilder#parse()}，该方法开始配置文件和映射文件的 解析
  * 一部分功能来自BaseBuilder
  */
 public class XMLConfigBuilder extends BaseBuilder {
@@ -473,7 +473,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 解析mappers标签节点
      *
-     * @param parent mappers节点对应的XNode节点
+     * @param parent mappers节点对应的XNode对象
      */
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
@@ -493,7 +493,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                     if (resource != null && url == null && mapperClass == null) {
                         ErrorContext.instance().resource(resource);
                         InputStream inputStream = Resources.getResourceAsStream(resource);
-                        // 使用XMLMapperBuilder解析文件
+                        // 使用XMLMapperBuilder解析映射文件
                         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
                         mapperParser.parse();
                         // url属性不为空
@@ -503,7 +503,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                         InputStream inputStream = Resources.getUrlAsStream(url);
                         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
                         mapperParser.parse();
-                        // mapperClass，配置的不是Mapper文件而是Mapper接口，hi系欸注册class属性指定的Mapper接口
+                        // mapperClass，配置的不是Mapper文件而是Mapper接口，注册class属性指定的Mapper接口
                     } else if (resource == null && url == null && mapperClass != null) {
                         Class<?> mapperInterface = Resources.classForName(mapperClass);
                         configuration.addMapper(mapperInterface);

@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
+ * 该类可以通过parse方法生产出StaticSqlSource对象
+ * SqlSourceBuilder可以将DynamicSqlSource和RowSqlSource中的#{}符号替换掉。从而将他们转为StaticSqlSource
+ *
  * @author Clinton Begin
  */
 public class SqlSourceBuilder extends BaseBuilder {
@@ -41,15 +44,17 @@ public class SqlSourceBuilder extends BaseBuilder {
     }
 
     /**
-     * 处理#{}占位符的方法
+     * 替换DynamicSqlSource和RowSqlSource中的#{}占位符。将其转为StaticSqlSource
      *
-     * @param originalSql          源sql
-     * @param parameterType
-     * @param additionalParameters
-     * @return
+     * @param originalSql          sqlNode.apply()拼接之后的SQL语句。是处理了${}和动态标签如<if>等之后的
+     * @param parameterType        实参类型
+     * @param additionalParameters 附加参数
+     * @return 生成的StaticSqlSource对象
      */
     public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+        // 处理#{}占位符的处理器
         ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
+        // 通用的占位符解析器，用来进行占位符替换
         GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
         String sql;
         // 会把#{} 替换成?

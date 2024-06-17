@@ -15,5 +15,8 @@
  */
 /**
  * Parses XML files to create a Configuration.
+ * 本包负责解析xml文件
+ * XMLConfigBuilder解析配置文件。XMLMapperEntityResolver解析配置文件头、映射文件头
+ * XMLMapperBuilder解析映射文件。XMLMapperEntityResolver解析映射文件头。XMlStatementBuilder解析映射文件体（SQL语句等）。XMLIncludeTransformer解析include标签
  */
 package org.apache.ibatis.builder.xml;

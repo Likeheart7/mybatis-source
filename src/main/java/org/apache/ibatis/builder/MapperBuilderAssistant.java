@@ -31,6 +31,7 @@ import java.util.*;
 
 /**
  * @author Clinton Begin
+ * 本类较为特殊，是建造者辅助类。继承BaseBuilder是为了使用其中的方法
  */
 public class MapperBuilderAssistant extends BaseBuilder {
 
@@ -87,7 +88,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
      * 通过被引用的namespace对应的cache，来创建当前namespace的缓存，实现缓存的共享
      *
      * @param namespace 被引用的namespace
-     * @return
+     * @return 被引用的namespace的缓存
      */
     public Cache useCacheRef(String namespace) {
         if (namespace == null) {
@@ -95,10 +96,12 @@ public class MapperBuilderAssistant extends BaseBuilder {
         }
         try {
             unresolvedCacheRef = true;
+            // 通过全局配置类Configuration获取指定命名空间的缓存
             Cache cache = configuration.getCache(namespace);
             if (cache == null) {
                 throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
             }
+            // 修改当前缓存指向查找到的被引用的命名空间的缓存
             currentCache = cache;
             unresolvedCacheRef = false;
             return cache;
@@ -108,7 +111,16 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /**
-     * 创建缓存对象的方法
+     * 创建一个新的缓存
+     *
+     * @param typeClass     缓存的实现类
+     * @param evictionClass 用哪个包装类来清理缓存
+     * @param flushInterval 缓存的清理时间间隔
+     * @param size          缓存大小
+     * @param readWrite     缓存是否支持读写
+     * @param blocking      缓存是否支持阻塞
+     * @param props         缓存配置属性
+     * @return 缓存
      */
     public Cache useNewCache(Class<? extends Cache> typeClass,
                              Class<? extends Cache> evictionClass,
@@ -164,7 +176,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /**
-     * 根据ResultMapping对象构建rResultMap对象并添加到configuration.resultMaps这个映射表中
+     * 根据ResultMapping对象构建ResultMap对象并添加到configuration.resultMaps这个映射表中
+     * 参数是ResultMap标签的属性
      *
      * @return 生成的resultMap对象
      */
@@ -188,11 +201,11 @@ public class MapperBuilderAssistant extends BaseBuilder {
             }
             // 获取父ResultMap对象
             ResultMap resultMap = configuration.getResultMap(extend);
-            // 获取父ResultMap对象中的ResultMaping集合
+            // 获取父ResultMap对象中的ResultMapping，即属性映射
             List<ResultMapping> extendedResultMappings = new ArrayList<>(resultMap.getResultMappings());
             // 删除需要覆盖的ResultMapping
             extendedResultMappings.removeAll(resultMappings);
-            //  如果当前<resultMap>标签中定义了<constructor>标签，则不需要使用父ResultMap中记录的相应<constructor>标签，这里会将其对应的ResultMapping对象删除
+            //  如果当前<resultMap>标签中定义了<constructor>标签，则不需要使用父ResultMap中的相应<constructor>标签，这里会将其对应的ResultMapping对象删除
             // Remove parent constructor if this resultMap declares a constructor.
             boolean declaresConstructor = false;
             for (ResultMapping resultMapping : resultMappings) {

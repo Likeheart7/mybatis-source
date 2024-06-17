@@ -50,20 +50,22 @@ public class XMLStatementBuilder extends BaseBuilder {
     }
 
     /**
-     * 解析insert、update等标签的方法，最终会保存在SqlSource对象
+     * 解析insert、update等标签的方法，最终会保存在SqlSource对象。
+     * 调用来源是：XMLMapperBuilder.parse() --> configurationElement() --> buildStatementFromContext() --> buildStatementFromContext() --> 本方法
      */
     public void parseStatementNode() {
-        // 获取id和databaseId
+        // 获取id 和 databaseId
         String id = context.getStringAttribute("id");
         String databaseId = context.getStringAttribute("databaseId");
+        // mybatis允许多数据库配置，所以有些语句只对特定数据库生效
         // 如果databaseId和当前使用的数据库不匹配，不加载这个标签
-        // 如果存在相同id且databaseID不为空的标签，也不加载
+        // 如果存在相同id且databaseId不为空的标签，也不加载
         if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
             return;
         }
-
-        // 根据名称决定SqlCommandType
+        // 读取节点名
         String nodeName = context.getNode().getNodeName();
+        // 根据名称决定SqlCommandType
         SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
         boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
         // 获取这个标签的属性值
@@ -84,7 +86,7 @@ public class XMLStatementBuilder extends BaseBuilder {
         LanguageDriver langDriver = getLanguageDriver(lang);
 
         // Parse selectKey after includes and remove them.
-        // 解析selectKey标签，<selectKey> 标签就可以实现自增 ID 的获取
+        // 解析selectKey标签，<selectKey> 标签就可以实现自增 ID 的获取。这里会将KeyGenerator加入Configuration.keyGenerator中
         processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
         // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
@@ -94,6 +96,7 @@ public class XMLStatementBuilder extends BaseBuilder {
         if (configuration.hasKeyGenerator(keyStatementId)) {
             keyGenerator = configuration.getKeyGenerator(keyStatementId);
         } else {
+            // 全局或者本语句启用key生成，则使用
             keyGenerator = context.getBooleanAttribute("useGeneratedKeys",
                     configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
                     ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;

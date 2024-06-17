@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 
 /**
  * @author Clinton Begin
+ * builder包中所有Builder类的基类，本类是抽象类，但没有任何抽象接口，为其他Builder类提供了一些工具方法。
+ * 不需要这些方法的Builder类没有继承BaseBuilder，如MapperAnnocationBuilder、SelectBuilder等
  */
 public abstract class BaseBuilder {
     // 最终的全局唯一的配置对象
@@ -54,6 +56,8 @@ public abstract class BaseBuilder {
         return Pattern.compile(regex == null ? defaultValue : regex);
     }
 
+    // XxxValueOf 方法，提供允许默认值的将输入参数转为指定类型
+
     protected Boolean booleanValueOf(String value, Boolean defaultValue) {
         return value == null ? defaultValue : Boolean.valueOf(value);
     }
@@ -66,6 +70,8 @@ public abstract class BaseBuilder {
         value = value == null ? defaultValue : value;
         return new HashSet<>(Arrays.asList(value.split(",")));
     }
+
+    //resolveXxx 根据字符串找出指定的枚举类型返回
 
     protected JdbcType resolveJdbcType(String alias) {
         if (alias == null) {
@@ -100,6 +106,12 @@ public abstract class BaseBuilder {
         }
     }
 
+    /**
+     * 根据类型别名创建类型实例
+     *
+     * @param alias 类型别名
+     * @return 类型实例
+     */
     protected Object createInstance(String alias) {
         Class<?> clazz = resolveClass(alias);
         if (clazz == null) {
@@ -124,7 +136,7 @@ public abstract class BaseBuilder {
     }
 
     /**
-     * 解析类型处理器， 依赖typeHandlerRegistry实现
+     * 根据类型处理器别名，创建类型处理器实例。依赖typeHandlerRegistry实现
      */
     protected TypeHandler<?> resolveTypeHandler(Class<?> javaType, String typeHandlerAlias) {
         if (typeHandlerAlias == null) {

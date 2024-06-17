@@ -24,12 +24,16 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * DynamicSqlSource 和 RawSqlSource 经过一系列解析之后，会得到最终可提交到数据库的 SQL 语句，这个时候就可以通过 StaticSqlSource 进行封装了。
+ * DynamicSqlSource 和 RawSqlSource 经过一系列解析之后，会得到最终可提交到数据库的 SQL 语句，这个时候就可以通过 StaticSqlSource 进行封装。
+ * StaticSqlSource是SqlSource的四个字类之一。其中已经不再有${}、#{}、动态标签，只有 ? 占位符
  */
 public class StaticSqlSource implements SqlSource {
 
+    // 解析后去掉${}、#{}、动态标签，只有 ? 占位符的sql
     private final String sql;
+    // SQL语句对应的参数列表
     private final List<ParameterMapping> parameterMappings;
+    // 全局配置对象
     private final Configuration configuration;
 
     public StaticSqlSource(Configuration configuration, String sql) {
@@ -42,6 +46,12 @@ public class StaticSqlSource implements SqlSource {
         this.configuration = configuration;
     }
 
+    /**
+     * 组建一个BoundSql对象
+     *
+     * @param parameterObject 参数对象
+     * @return 组建的BoundSql对象
+     */
     @Override
     public BoundSql getBoundSql(Object parameterObject) {
         return new BoundSql(configuration, sql, parameterMappings, parameterObject);

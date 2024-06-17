@@ -14,6 +14,9 @@
  *    limitations under the License.
  */
 /**
+ * 包括很多建造者类。
+ * 1. 解析XML配置文件和映射文件，功能在xml子包中。
+ * 2. 解析注解形式得Mapper声明，功能在annotation子包中
  * Base package for the Configuration building code.
  */
 package org.apache.ibatis.builder;
