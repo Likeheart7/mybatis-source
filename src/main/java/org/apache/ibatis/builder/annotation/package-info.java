@@ -15,5 +15,7 @@
  */
 /**
  * Parses annotions to create a Configuration.
+ * 本包负责注解形式的映射的解析
+ * Mybatis还提供类似@SelectProvider等注解的间接映射
  */
 package org.apache.ibatis.builder.annotation;
