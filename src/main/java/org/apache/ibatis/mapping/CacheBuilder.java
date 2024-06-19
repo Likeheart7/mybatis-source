@@ -31,7 +31,7 @@ import java.util.Properties;
 
 /**
  * @author Clinton Begin
- * 缓存的构造模式
+ * 缓存的建造者模式
  */
 public class CacheBuilder {
     // cache的编号

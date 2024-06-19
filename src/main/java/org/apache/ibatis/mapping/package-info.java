@@ -15,5 +15,12 @@
  */
 /**
  * Base package for mapping.
+ * 本包负责：
+ *  1. SQL语句处理
+ *      MappedStatement、SqlSource、BoundSql
+ *  2. 输出结果处理
+ *  3. 输入参数处理
+ *  4. 多数据库种类处理
+ *  等
  */
 package org.apache.ibatis.mapping;

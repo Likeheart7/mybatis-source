@@ -32,28 +32,30 @@ import java.util.*;
  * 每一个子标签会被解析成一个ResultMapping对象
  */
 public class ResultMap {
+    // 全局配置对象
     private Configuration configuration;
 
     private String id; // 当前resultMap标签的id属性
-    private Class<?> type;  // 标签的type属性，就是返回值类型
-    // 维护了整个resultMap节点解析后的所有子标签
+    private Class<?> type;  // 标签的type属性，就是对应的Java类型
+    // 维护了整个resultMap节点解析后的所有子<result>标签
     private List<ResultMapping> resultMappings;
     // 所有和唯一标识相关的映射，如<id>和constructor标签下的<idArg>标签解析得到的ResultMapping对象，如果没有定义这些标签，就和resultMappings相同
     private List<ResultMapping> idResultMappings;
-    // constructor标签下的全部子标签定义的映射关系
+    // constructor标签下的全部子标签定义的映射关系，constructor标签下的属性传入构造方法来赋值
     private List<ResultMapping> constructorResultMappings;
-    // 维护了不带constructor标志下的全部子表其映射关系
+    // 维护了不带constructor标志下的全部子标签映射关系
     private List<ResultMapping> propertyResultMappings;
     // 所有映射关系涉及的column属性，即列名
     private Set<String> mappedColumns;
-    // 所有properties属性
+    // 所有参与映射的Java对象属性集合
     private Set<String> mappedProperties;
-    // 对应<discriminator>
+    // 对应<discriminator>，鉴别器，用于resultMap实现分支
     private Discriminator discriminator;
     // 当前 <resultMap> 标签是否嵌套了其他 <resultMap> 标签
     private boolean hasNestedResultMaps;
     // 当前 <resultMap> 标签是否含有嵌套查询
     private boolean hasNestedQueries;
+    // 是否启动自动映射
     private Boolean autoMapping;
 
     private ResultMap() {

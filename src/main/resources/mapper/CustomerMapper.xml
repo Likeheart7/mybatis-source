@@ -26,9 +26,15 @@
         </collection>
     </resultMap>
 
+    <sql id="demoSqlFragment">
+        where id =
+        #{id}
+    </sql>
     <!--自定义SQL语句-->
     <select id="find" resultMap="customerSimpleMap">
-        select * from t_customer where id = #{id}
+        select * from t_customer
+        /*测试include是怎么被sql标签替换的*/
+        <include refid="demoSqlFragment"/>
     </select>
     <select id="findWithAddress" resultMap="customerMap">
         SELECT c.*, a.id as address_id, a.*
@@ -50,6 +56,6 @@
         数据库生成的自增id会自动填充到传入的Customer对象的id字段中-->
     <insert id="save" keyProperty="id" useGeneratedKeys="true">
         insert into t_customer (id, name, phone)
-        values (#{id},#{name},#{phone})
+        values (#{id}, #{name}, #{phone})
     </insert>
 </mapper>

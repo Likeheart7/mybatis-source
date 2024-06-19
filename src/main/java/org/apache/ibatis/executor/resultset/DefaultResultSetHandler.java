@@ -868,24 +868,29 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         }
     }
 
-    //
-    // DISCRIMINATOR
-    // 这里处理<discriminator>标签
-    //
-
+    /**
+     * 这里处理 discriminator 标签，实现分支效果
+     *
+     * @param rs           数据库查询结果集
+     * @param resultMap    当前的ResultMap对象
+     * @param columnPrefix 属性的父级前缀
+     * @return 已经不包含鉴别器的新的ResultMap对象
+     * @throws SQLException
+     */
     public ResultMap resolveDiscriminatedResultMap(ResultSet rs, ResultMap resultMap, String columnPrefix) throws SQLException {
-        // / 用于维护处理过的ResultMap唯一标识
+        // 用于维护处理过的鉴别器的唯一标识
         Set<String> pastDiscriminators = new HashSet<>();
         // 获取ResultMap中的Discriminator对象，这是通过<resultMap>标签中的<discriminator>标签解析得到的
         Discriminator discriminator = resultMap.getDiscriminator();
         // 如果存在<discriminator>标签
         while (discriminator != null) {
-            // 获取当前待映射的记录中Discriminator要检测的列的值
+            // 获得条件判断的结果，使用该结果值进行鉴别器的鉴别
             final Object value = getDiscriminatorValue(rs, discriminator, columnPrefix);
-            // 根据上述列值确定要使用的ResultMap的唯一标识
+            // 根据上述值确定要使用的ResultMap的唯一标识
             final String discriminatedMapId = discriminator.getMapIdFor(String.valueOf(value));
+            // 从接下来的case中查找分支
             if (configuration.hasResultMap(discriminatedMapId)) {
-                // 从全局配置对象Configuration中获取ResultMap对象
+                // 从全局配置对象Configuration中获取对应的ResultMap对象
                 resultMap = configuration.getResultMap(discriminatedMapId);
                 // 记录当前Discriminator对象
                 Discriminator lastDiscriminator = discriminator;
@@ -903,9 +908,20 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return resultMap;
     }
 
+    /**
+     * 获取鉴别器的鉴别条件的结果
+     *
+     * @param rs            数据库查询获得的结果集
+     * @param discriminator 鉴别器
+     * @param columnPrefix  属性的父级前缀
+     * @return 计算出鉴别器的value对应的结果值
+     * @throws SQLException
+     */
     private Object getDiscriminatorValue(ResultSet rs, Discriminator discriminator, String columnPrefix) throws SQLException {
         final ResultMapping resultMapping = discriminator.getResultMapping();
+        // 要鉴别的字符按的类型处理器
         final TypeHandler<?> typeHandler = resultMapping.getTypeHandler();
+        // 通过prependPrefix()得到列名，然后取出列的值
         return typeHandler.getResult(rs, prependPrefix(resultMapping.getColumn(), columnPrefix));
     }
 
