@@ -30,6 +30,7 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Eduardo Macarron
+ * LanguageDriver接口的子类。是具体的实现
  */
 public class XMLLanguageDriver implements LanguageDriver {
 
@@ -45,14 +46,20 @@ public class XMLLanguageDriver implements LanguageDriver {
         return builder.parseScriptNode();
     }
 
+    /**
+     * 根据注解获取SQL，创建SqlSource的方法
+     * 调用来源是：注解内的SQL生成ProviderSqlSource对象。ProviderSqlSource.getBoundSql --> createSqlSource --> 本方法
+     *
+     * @return 是一个DynamicSqlSource对象或RawSqlSource对象
+     */
     @Override
     public SqlSource createSqlSource(Configuration configuration, String script, Class<?> parameterType) {
         // issue #3
-        // 以<script>说明是动态SQL
+        // 以<script>说明是动态SQL，使用和解析映射文件内SQL相同的方式
         if (script.startsWith("<script>")) {
             XPathParser parser = new XPathParser(script, false, configuration.getVariables(), new XMLMapperEntityResolver());
             return createSqlSource(configuration, parser.evalNode("/script"), parameterType);
-        } else {
+        } else {    // 如果不是动态SQL，直接生成SqlSource
             // issue #127
             script = PropertyParser.parse(script, configuration.getVariables());
             TextSqlNode textSqlNode = new TextSqlNode(script);

@@ -10,6 +10,15 @@ public class Customer {
     private String phone;
     private List<Address> addresses = new ArrayList<>();
 
+    public Customer() {
+    }
+
+    public Customer(Long id, String name, String phone) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+    }
+
     public Long getId() {
         return id;
     }

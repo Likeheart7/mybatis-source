@@ -22,7 +22,7 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
- * 当SQL语句包括动态SQL时，解析的结果就是这个类
+ * 当SQL语句包括动态SQL（动态标签、${}）时，解析的结果就是本类
  */
 public class DynamicSqlSource implements SqlSource {
 
@@ -39,13 +39,13 @@ public class DynamicSqlSource implements SqlSource {
     public BoundSql getBoundSql(Object parameterObject) {
         // DynamicContext是用来存储解析动态SQL语句的中间结果
         DynamicContext context = new DynamicContext(configuration, parameterObject);
-        // 调用apply方法处理动态sql
-        // 每个SqlNode对象都会将解析之后的SQL语句片段追加到DynamicContext中
+        // 调用apply方法处理动态sql,每个SqlNode对象都会将解析之后的SQL语句片段追加到DynamicContext中
+        // 经过这一步，动态标签节点和${}都会被替换
         rootSqlNode.apply(context);
 
         SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
         Class<?> parameterType = parameterObject == null ? Object.class : parameterObject.getClass();
-        // sqlSourceParser.parse()会将#{}占位符替换
+        // sqlSourceParser.parse()会将#{}占位符替换为 ?，最终返回的是一个StaticSqlSource对象
         SqlSource sqlSource = sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());
         // 返回的boundSql对象
         // ，包含了解析之后的 SQL 语句（sql 字段）、每个“#{}”占位符的属性信息（parameterMappings 字段 ，List<ParameterMapping> 类型）、

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author Clinton Begin
- * 用来处理包含${}的sql片段的
+ * 字符串节点，就是标签内的普通SQL文本，解析是为了替换内部的${}占位符
  */
 public class TextSqlNode implements SqlNode {
     private final String text;
@@ -39,23 +39,42 @@ public class TextSqlNode implements SqlNode {
         this.injectionFilter = injectionFilter;
     }
 
+    /**
+     * 判断解析的文本SQL是否是动态SQL，内部有${}就是动态的，反之不是
+     *
+     * @return 判断结果
+     */
     public boolean isDynamic() {
+        // 占位符处理器，该处理器只判断是否含有占位符
         DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
         GenericTokenParser parser = createParser(checker);
+        // 如果含有占位符，会将checker的isDynamic属性置为true
         parser.parse(text);
         return checker.isDynamic();
     }
 
+    /**
+     * 解析该节点自身
+     *
+     * @param context 上下文环境，解析结果就合并到这里面
+     * @return 是否解析成功
+     */
     @Override
     public boolean apply(DynamicContext context) {
         // 创建GenericTokenParser解析器，这里指定的占位符的起止符号分别是"${"和"}"
-        // BindingTokenParser将${}替换为用户传入的实参
         GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
+        // BindingTokenParser将${}替换为用户传入的实参
         // 将解析之后的SQL片段追加到DynamicContext暂存
         context.appendSql(parser.parse(text));
         return true;
     }
 
+    /**
+     * 创建一个通用占位符解析器，用来解析${}占位符
+     *
+     * @param handler 用来处理${}占位符的专用处理器
+     * @return 占位符解析器
+     */
     private GenericTokenParser createParser(TokenHandler handler) {
         return new GenericTokenParser("${", "}", handler);
     }
@@ -72,6 +91,7 @@ public class TextSqlNode implements SqlNode {
 
         /**
          * 处理${}占位符的方法
+         * 过程逻辑是，取出占位符中的变量，以该变量为键去上下文环境中查值，然后用找到的值替换占位符
          */
         @Override
         public String handleToken(String content) {
@@ -108,6 +128,9 @@ public class TextSqlNode implements SqlNode {
             return isDynamic;
         }
 
+        /**
+         * 记录自身是否遇到过占位符
+         */
         @Override
         public String handleToken(String content) {
             this.isDynamic = true;

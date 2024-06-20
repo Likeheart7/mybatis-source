@@ -44,7 +44,7 @@ public class SqlSourceBuilder extends BaseBuilder {
     }
 
     /**
-     * 替换DynamicSqlSource和RowSqlSource中的#{}占位符。将其转为StaticSqlSource
+     * 替换DynamicSqlSource和RowSqlSource中的#{}占位符。以StaticSqlSource对象返回
      *
      * @param originalSql          sqlNode.apply()拼接之后的SQL语句。是处理了${}和动态标签如<if>等之后的
      * @param parameterType        实参类型

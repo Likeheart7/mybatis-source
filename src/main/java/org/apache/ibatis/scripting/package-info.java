@@ -15,5 +15,6 @@
  */
 /**
  * Base package for languages.
+ * 本包负责解析动态sql。涉及到OGNL（Object Graph Navigation Language）对象图导航语言，示例见{@link com.chenx.learning.ognl.OgnlTest}
  */
 package org.apache.ibatis.scripting;

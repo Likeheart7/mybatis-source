@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.ibatis.scripting.xmltags;
+package com.chenx.learning.ognl;
 
 import ognl.MemberAccess;
 import org.apache.ibatis.reflection.Reflector;
@@ -23,16 +23,7 @@ import java.lang.reflect.Member;
 import java.util.Map;
 
 /**
- * The {@link MemberAccess} class that based on <a href=
- * 'https://github.com/jkuhnert/ognl/blob/OGNL_3_2_1/src/java/ognl/DefaultMemberAccess.java'>DefaultMemberAccess</a>.
- *
- * @author Kazuki Shimizu
- * @see <a href=
- * 'https://github.com/jkuhnert/ognl/blob/OGNL_3_2_1/src/java/ognl/DefaultMemberAccess.java'>DefaultMemberAccess</a>
- * @see <a href='https://github.com/jkuhnert/ognl/issues/47'>#47 of ognl</a>
- * MyBatis在pom文件中引入了OGNL的依赖包。
- * 本类基于反射提供修改对象可访问性的功能
- * @since 3.5.0
+ * MyBatis提供的一个MemberAccess的实现
  */
 class OgnlMemberAccess implements MemberAccess {
 
@@ -43,15 +34,6 @@ class OgnlMemberAccess implements MemberAccess {
         this.canControlMemberAccessible = Reflector.canControlMemberAccessible();
     }
 
-    /**
-     * 设置属性的可访问性
-     *
-     * @param context      环境上下文
-     * @param target       目标对象
-     * @param member       目标对象的目标成员
-     * @param propertyName 属性名称
-     * @return 属性的可访问性
-     */
     @Override
     public Object setup(Map context, Object target, Member member, String propertyName) {
         Object result = null;

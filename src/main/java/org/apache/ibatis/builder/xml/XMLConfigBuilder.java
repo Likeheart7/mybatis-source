@@ -45,7 +45,7 @@ import java.util.Properties;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
- * 解析mybatis-config.xml文件，用解析结果建造一个Configuration对象，即全局配置对象，入口方法是{@link XMLConfigBuilder#parse()}，该方法开始配置文件和映射文件的 解析
+ * 解析mybatis-config.xml文件，用解析结果建造一个Configuration对象，即全局配置对象，入口方法是{@link XMLConfigBuilder#parse()}，该方法开始配置文件和映射文件的解析
  * 一部分功能来自BaseBuilder
  */
 public class XMLConfigBuilder extends BaseBuilder {

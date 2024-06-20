@@ -26,15 +26,23 @@ import java.util.Map;
  */
 public class ForEachSqlNode implements SqlNode {
     public static final String ITEM_PREFIX = "__frch_";
-
+    // 表达式解析器
     private final ExpressionEvaluator evaluator;
+    // collection属性对应的值
     private final String collectionExpression;
+    // 节点内的内容
     private final SqlNode contents;
+    // open属性对应的值
     private final String open;
+    // close属性对应的值
     private final String close;
+    // separator属性对应的值
     private final String separator;
+    // item属性对应的值，即每个元素
     private final String item;
+    // index属性的值，即元素编号
     private final String index;
+    // 全局配置信息
     private final Configuration configuration;
 
     public ForEachSqlNode(Configuration configuration, SqlNode contents, String collectionExpression, String index, String item, String open, String close, String separator) {
@@ -51,11 +59,15 @@ public class ForEachSqlNode implements SqlNode {
 
     /**
      * 解析foreach标签的具体方法
+     *
+     * @param context 上下文
+     * @return 解析是否成功
      */
     @Override
     public boolean apply(DynamicContext context) {
+        //获取环境上下文信息
         Map<String, Object> bindings = context.getBindings();
-        // 通过ExpressionEvaluator解析出collection属性指定的表达式
+        // 通过ExpressionEvaluator解析出collection属性指定的表达式，获得迭代器
         final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings);
         if (!iterable.iterator().hasNext()) {
             return true;
@@ -68,15 +80,19 @@ public class ForEachSqlNode implements SqlNode {
         // 追加sql片段
         for (Object o : iterable) {
             DynamicContext oldContext = context;
+            // 第一个元素或分割符是null
             if (first || separator == null) {
+                // 添加元素
                 context = new PrefixedContext(context, "");
             } else {
+                // 添加分隔符 + 元素
                 context = new PrefixedContext(context, separator);
             }
             int uniqueNumber = context.getUniqueNumber();
             // Issue #709
             // 处理Map类型
             if (o instanceof Map.Entry) {
+                // 将被迭代对象放入上下文环境中
                 @SuppressWarnings("unchecked")
                 Map.Entry<Object, Object> mapEntry = (Map.Entry<Object, Object>) o;
                 applyIndex(context, mapEntry.getKey(), uniqueNumber);
@@ -86,6 +102,7 @@ public class ForEachSqlNode implements SqlNode {
                 applyIndex(context, i, uniqueNumber);
                 applyItem(context, o, uniqueNumber);
             }
+            // 根据上下文环境构建内容
             contents.apply(new FilteredDynamicContext(configuration, context, index, item, uniqueNumber));
             if (first) {
                 first = !((PrefixedContext) context).isPrefixApplied();
@@ -93,7 +110,9 @@ public class ForEachSqlNode implements SqlNode {
             context = oldContext;
             i++;
         }
+        // 添加close字符串
         applyClose(context);
+        // 清理此次操作对上下文环境的影响
         context.getBindings().remove(item);
         context.getBindings().remove(index);
         return true;

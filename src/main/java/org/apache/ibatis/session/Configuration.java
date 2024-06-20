@@ -598,7 +598,11 @@ public class Configuration {
         return languageRegistry;
     }
 
+    /**
+     * 设置默认的脚本语言驱动
+     */
     public void setDefaultScriptingLanguage(Class<? extends LanguageDriver> driver) {
+        // 如果没有自定义配置，就用XMLLanguageDriver
         if (driver == null) {
             driver = XMLLanguageDriver.class;
         }

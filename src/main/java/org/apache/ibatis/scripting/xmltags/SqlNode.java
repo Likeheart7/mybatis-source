@@ -20,7 +20,12 @@ package org.apache.ibatis.scripting.xmltags;
  * 处理动态SQL语句的时候，会将动态SQL解析为SQLNode对象，多个SqlNode对象通过组合模式组成树形结构供上层使用
  */
 public interface SqlNode {
-    // 根据用户传入的实参，解析该SqlNode所表示的动态SQL，将解析后的SQL片段追加到DynamicContext.sqlBuilder中暂存
-    // 当所有的动态SQL判断解析完，就可以从DynamicContext.sqlBuilder中得到完整的sql语句
+    /**
+     * 根据用户传入的实参，解析该SqlNode所表示的动态SQL，将解析后的SQL片段追加到DynamicContext.sqlBuilder中暂存
+     * 当所有的动态SQL判断解析完，就可以从DynamicContext.sqlBuilder中得到完整的sql语句
+     *
+     * @param context 上下文环境，解析结果就合并到这里面
+     * @return 是否解析成功
+     */
     boolean apply(DynamicContext context);
 }

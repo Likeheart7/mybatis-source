@@ -32,6 +32,7 @@ import java.util.Map;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
+ * 通过注解形式获取到的SQL语句对应本类。和DynamicSqlSource、RawSqlSource、StaticSqlSource都是SqlSource的实现
  */
 public class ProviderSqlSource implements SqlSource {
 

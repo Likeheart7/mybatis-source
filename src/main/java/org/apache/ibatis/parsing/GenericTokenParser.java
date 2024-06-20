@@ -38,6 +38,9 @@ public class GenericTokenParser {
 
     /**
      * 这里主要完成了占位符的定位工作，具体的替换工作交给关联的TokenHandler处理
+     * 同时也用来判断SQL文本是否属于动态SQL
+     *
+     * @param text SQL文本
      */
     public String parse(String text) {
         if (text == null || text.isEmpty()) {

@@ -27,6 +27,7 @@ import java.util.StringJoiner;
 
 /**
  * @author Clinton Begin
+ * 在解析SQL节点树的过程中保存解析完成的SQL片段和保存解析过程中 一些参数和环境信息
  */
 public class DynamicContext {
 
@@ -38,25 +39,36 @@ public class DynamicContext {
         OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
     }
 
-    // 依赖记录上下文的kv信息
+    // 上下文环境
     private final ContextMap bindings;
-    // 用来记录解析之后的语句
+    // 用来记录解析完成的语句片段
     private final StringJoiner sqlBuilder = new StringJoiner(" ");
+    // 解析时的唯一标识，防止解析混乱
     private int uniqueNumber = 0;
 
+    /**
+     * 构造方法
+     *
+     * @param configuration   全局配置信息
+     * @param parameterObject 传入的查询参数对象
+     */
     public DynamicContext(Configuration configuration, Object parameterObject) {
         // 这里会根据传入进来的用来替换#{}的实参类型创建对应的ContextMap对象
-        // 对于不是Map类型的实参，创建对象的MetaObject对象，封装成ContextMap
+        // 对于不是Map类型的实参，创建对象的MetaObject对象，封装成ContextMap。基于参数对象的元数据可以方便地引用参数对象的属性值，让我们在编写SQL语句的时候可以直接引用参数对象的属性
         if (parameterObject != null && !(parameterObject instanceof Map)) {
+            // 获取参数对象的元对象
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
+            // 判断参数对象本身是否有对应的类型处理器
             boolean existsTypeHandler = configuration.getTypeHandlerRegistry().hasTypeHandler(parameterObject.getClass());
+            // 存入上下文信息
             bindings = new ContextMap(metaObject, existsTypeHandler);
         } else {
             // 对于Map类型的实参，创建一个空的ContextMap对象
             bindings = new ContextMap(null, false);
         }
-        // 这里实参对应的key是_parameter
+        //  参数对象放入上下文信息，对应的key是_parameter。因此在编写sql语句时，可以直接使用PARAMETER_OBJECT_KEY引用整个参数对象
         bindings.put(PARAMETER_OBJECT_KEY, parameterObject);
+        // 数据库id放入上下文信息。因此在编写SQL语句时，我们可以直接使用DATABASE_ID_KEY变量引用数据库id
         bindings.put(DATABASE_ID_KEY, configuration.getDatabaseId());
     }
 
@@ -94,6 +106,12 @@ public class DynamicContext {
             this.fallbackParameterObject = fallbackParameterObject;
         }
 
+        /**
+         * 重写的get方法，如果从map中没有查到，尝试从参数对象的元对象查。所以我们在编写SQL的时候可以直接使用实参的属性名获取值。
+         *
+         * @param key 键
+         * @return 查询结果
+         */
         @Override
         public Object get(Object key) {
             String strKey = (String) key;
@@ -102,7 +120,7 @@ public class DynamicContext {
                 return super.get(strKey);
             }
 
-            // 如果没有对应的key，并且parameterMetaObject是null，就返回null
+            // 如果没有对应的key，尝试从参数对象的元对象中获取
             if (parameterMetaObject == null) {
                 return null;
             }

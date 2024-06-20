@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * @author Clinton Begin
  * DynamicSqlSource 和 RawSqlSource 经过一系列解析之后，会得到最终可提交到数据库的 SQL 语句，这个时候就可以通过 StaticSqlSource 进行封装。
- * StaticSqlSource是SqlSource的四个字类之一。其中已经不再有${}、#{}、动态标签，只有 ? 占位符
+ * StaticSqlSource是SqlSource的四个实现类之一。其中已经不再有${}、#{}、动态标签，只有 ? 占位符，可以直接提交给数据库执行
  */
 public class StaticSqlSource implements SqlSource {
 

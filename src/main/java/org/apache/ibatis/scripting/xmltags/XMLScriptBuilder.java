@@ -31,12 +31,17 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
+ * 数据操作语句由多个SQL节点组成。Mybatis会将XML中的信息读取进内存，该类负责解析，构建出对应的SQL节点树
  */
 public class XMLScriptBuilder extends BaseBuilder {
 
+    // 当前要处理的XML节点
     private final XNode context;
+    // 当前节点是否是动态节点
     private boolean isDynamic;
+    // 输入参数的类型
     private final Class<?> parameterType;
+    // 节点类型和对应的处理器组成的Map
     private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
 
     public XMLScriptBuilder(Configuration configuration, XNode context) {
@@ -63,7 +68,13 @@ public class XMLScriptBuilder extends BaseBuilder {
         nodeHandlerMap.put("bind", new BindHandler());
     }
 
+    /**
+     * 将xml映射文件中的一个数据库操作节点解析为节点树，返回SqlSource对象的入口方法
+     *
+     * @return 生成的SqlSource对象
+     */
     public SqlSource parseScriptNode() {
+        // 调用parseDynamicTags方法来解析
         MixedSqlNode rootSqlNode = parseDynamicTags(context);
         SqlSource sqlSource;
         // 根据该sql是否为动态sql，生成不同的SqlSource实现
@@ -75,25 +86,32 @@ public class XMLScriptBuilder extends BaseBuilder {
         return sqlSource;
     }
 
+    /**
+     * 将XNode对象解析为一个节点树
+     *
+     * @param node XNode对象，对应一个数据库操作节点
+     * @return 解析后得到的节点树
+     */
     protected MixedSqlNode parseDynamicTags(XNode node) {
-        // 用来存放解析后的sqlnode结果
+        // 用来存放解析后的sqlNode结果
         List<SqlNode> contents = new ArrayList<>();
         // 获取有sql的标签下的所有节点，包括标签节点和文本节点
         NodeList children = node.getNode().getChildNodes();
+        // 循环遍历每一个子XNode
         for (int i = 0; i < children.getLength(); i++) {
             XNode child = node.newXNode(children.item(i));
             if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
-                // 处理文本节点（就是sql语句）
+                // 处理文本节点（就是sql语句），参数代表为null时的默认值
                 String data = child.getStringBody("");
                 TextSqlNode textSqlNode = new TextSqlNode(data);
-                // 解析sql语句，如果含有为解析的${}，就认为是动态SQL
+                // 解析sql语句，如果含有未解析的${}，就认为是动态SQL
                 if (textSqlNode.isDynamic()) {
                     contents.add(textSqlNode);
                     isDynamic = true; // 动态SQL标识
                 } else {
                     contents.add(new StaticTextSqlNode(data));
                 }
-            } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) { // issue #628
+            } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) { // issue #628  // 如果子XNode仍然是Node类型
                 // 如果解析到子标签，就一定是动态sql，根据不同的标签，获取对应的NodeHandler进行后续解析
                 String nodeName = child.getNode().getNodeName();
                 NodeHandler handler = nodeHandlerMap.get(nodeName);
@@ -105,14 +123,30 @@ public class XMLScriptBuilder extends BaseBuilder {
                 isDynamic = true;
             }
         }
-        // 解析后的SqlNode集合将会被封装成MixedSqlNode返回
+        // 解析后的SqlNode集合将会被封装成MixedSqlNode返回，实际上就是一个SQL节点树
         return new MixedSqlNode(contents);
     }
 
     /**
      * 动态sql的if、choose等标签的解析器接口，根据不同的标签，由不同的实现来处理
+     * 一共有八个实现， 都在本类中：
+     * 1. BindHandler
+     * 2. TrimHandler
+     * 3. WhereHandler
+     * 4. SetHandler
+     * 5. ForEachHandler
+     * 6. IfHandler
+     * 7. OtherwiseHandler
+     * 8. ChooseHandler
+     * 以IfHandler为例解析
      */
     private interface NodeHandler {
+        /**
+         * 将解析的节点拼接到节点树中的方法，有具体节点对应的处理器实现
+         *
+         * @param nodeToHandle   要被拼接的节点
+         * @param targetContents 目标节点树
+         */
         void handleNode(XNode nodeToHandle, List<SqlNode> targetContents);
     }
 
@@ -202,14 +236,17 @@ public class XMLScriptBuilder extends BaseBuilder {
 
         /**
          * 解析if标签的方法
+         *
+         * @param nodeToHandle   要被拼接的节点
+         * @param targetContents 目标节点树
          */
         @Override
         public void handleNode(XNode nodeToHandle, List<SqlNode> targetContents) {
-            //通过parseDynamicTags() 方法，解析 < if>标签下嵌套的动态SQL
+            //通过调用parseDynamicTags() 方法，解析 < if>标签下级的节点
             MixedSqlNode mixedSqlNode = parseDynamicTags(nodeToHandle);
-            // 获取<if>标签判断分支的条件
+            // 获取<if>标签判断分支的test属性
             String test = nodeToHandle.getStringAttribute("test");
-            // 创建IfNode对象(也是SqlNode接口的实现)，并将其保存下来
+            // 创建IfNode对象(也是SqlNode接口的实现)，并将其存放到节点树中
             IfSqlNode ifSqlNode = new IfSqlNode(mixedSqlNode, test);
             targetContents.add(ifSqlNode);
         }
