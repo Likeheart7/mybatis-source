@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
+ * 使用池化数据源时，存储数据库连接的就是本类。除此之外，还包含了许多描述连接池运行数据的属性
  */
 public class PoolState {
     // 池化的数据源

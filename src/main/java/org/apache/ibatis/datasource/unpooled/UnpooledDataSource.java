@@ -30,7 +30,8 @@ import java.util.logging.Logger;
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
- * 非池化数据源的具体实现
+ * 非池化数据源的具体实现。只需要每次请求连接时获取连接，结束时关闭连接即可
+ * <\dataSource type="UNPOOLED"><\/dataSource>表示非池化数据源
  */
 public class UnpooledDataSource implements DataSource {
     // 驱动加载器
@@ -39,6 +40,7 @@ public class UnpooledDataSource implements DataSource {
     private Properties driverProperties;
     // 已经注册的所有驱动
     private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
+
 
     // 数据库驱动
     private String driver;
@@ -219,7 +221,7 @@ public class UnpooledDataSource implements DataSource {
     }
 
     /**
-     * 实际获取数据库连接的方法
+     * 获取数据库连接的方法
      *
      * @param username 用户名
      * @param password 密码
@@ -247,7 +249,7 @@ public class UnpooledDataSource implements DataSource {
      * @return 连接对象
      */
     private Connection doGetConnection(Properties properties) throws SQLException {
-        // 初始化类加载器
+        // 初始化驱动
         initializeDriver();
         // 创建连接
         Connection connection = DriverManager.getConnection(url, properties);
@@ -257,7 +259,7 @@ public class UnpooledDataSource implements DataSource {
     }
 
     /**
-     * 初始化数据库驱动
+     * 初始化数据库驱动。将指定的驱动找到然后注册给 DriverManager
      */
     private synchronized void initializeDriver() throws SQLException {
         // 如果在registeredDrivers这个map中还没有创建当前这个驱动，就初始化放入

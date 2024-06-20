@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  * This is a simple, synchronous, thread-safe database connection pool.
  *
  * @author Clinton Begin
- * 池化的数据源，目的是
+ * 池化数据源，池化的目的是
  * 1. 在空闲时段缓存一些连接，防止被突发流量冲垮
  * 2. 实现数据库连接复用，提到响应速度
  * 3. 控制数据库连接上限，防止连接过多造成数据库假死
@@ -46,7 +46,7 @@ public class PooledDataSource implements DataSource {
 
     // 真正管理连接的地方
     private final PoolState state = new PoolState(this);
-    // PooledDatasource内部组合了一个 UnPooledDatasource 的实例
+    // 当连接池需要新连接时，通过这个非池化数据源来创建
     private final UnpooledDataSource dataSource;
 
     // OPTIONAL CONFIGURATION FIELDS
@@ -339,7 +339,7 @@ public class PooledDataSource implements DataSource {
 
     /**
      * Closes all active and idle connections in the pool.
-     * 关闭连接池中所有的活跃的、空闲的连接
+     * 关闭连接池中所有的活跃的、空闲的连接。在数据源属性变动时会被调用，保证连接池中所有的连接都是等价的，防止中途数据源信息改变导致的连接属性不同
      */
     public void forceCloseAll() {
         // 增加一个同步锁
@@ -393,11 +393,17 @@ public class PooledDataSource implements DataSource {
         return ("" + url + username + password).hashCode();
     }
 
-    // 收回一个连接
+    /**
+     * 收回一个连接
+     *
+     * @param conn 要收回的连接
+     * @throws SQLException
+     */
     protected void pushConnection(PooledConnection conn) throws SQLException {
 
+        // 防止多线程冲突
         synchronized (state) {
-            // 将该链接从活跃连接里删除
+            // 将该连接从活跃连接里删除
             state.activeConnections.remove(conn);
             if (conn.isValid()) { // 如果当前连接是可用的
                 // 如果空闲连接池未满，且该连接的类型编码属于这个连接池
@@ -413,7 +419,7 @@ public class PooledDataSource implements DataSource {
                     state.idleConnections.add(newConn);
                     newConn.setCreatedTimestamp(conn.getCreatedTimestamp());
                     newConn.setLastUsedTimestamp(conn.getLastUsedTimestamp());
-                    // 设置连接为未校验状态，一边后续使用的时候重新校验
+                    // 设置连接为未校验状态，以便后续使用的时候重新校验
                     conn.invalidate();
                     if (log.isDebugEnabled()) {
                         log.debug("Returned connection " + newConn.getRealHashCode() + " to pool.");
@@ -433,8 +439,7 @@ public class PooledDataSource implements DataSource {
                     // 连接置为未校验
                     conn.invalidate();
                 }
-            } else { // 如果回收的连接不是valid的，就说明出现了一个坏链接，不对他做任何处理，更新坏链接数
-                // question: 这个坏连接不需要手动关闭吗？
+            } else { // 如果回收的连接不是valid的，就说明出现了一个坏链接，不对他做任何处理，记录坏连接数
                 if (log.isDebugEnabled()) {
                     log.debug("A bad connection (" + conn.getRealHashCode() + ") attempted to return to the pool, discarding connection.");
                 }
@@ -444,20 +449,23 @@ public class PooledDataSource implements DataSource {
     }
 
     /**
-     * 从池化数据源中取出一个连接
+     * 从池化数据源中给出一个连接
      *
      * @param username 用户名
      * @param password 密码
+     * @return 池化的数据库连接
      */
     private PooledConnection popConnection(String username, String password) throws SQLException {
         boolean countedWait = false;    // 用来实现每个请求等待多轮也只会记录一次
         PooledConnection conn = null;
+        // 用于计算取出连接花费的时间
         long t = System.currentTimeMillis();
         int localBadConnectionCount = 0;
 
         while (conn == null) {
+            // state就是连接池，用它加锁，防止多线程冲突
             synchronized (state) {
-                // 如果空闲连接池非空，直接从空闲连接池中取一个连接来用，remove()方法会移除并返回元素
+                // 空闲连接池非空，直接从空闲连接池中取一个连接，remove()方法会移除并返回元素
                 if (!state.idleConnections.isEmpty()) {
                     // Pool has available connection
                     conn = state.idleConnections.remove(0);
@@ -470,7 +478,7 @@ public class PooledDataSource implements DataSource {
                     // 检查当前活跃连接数是否达到配置的线程最大连接数，如果没有达到，说明允许创建新连接
                     if (state.activeConnections.size() < poolMaximumActiveConnections) {
                         // Can create new connection
-                        // 创建一个新的数据库连接，创建的时候定义是属于这个数据源的。
+                        // 通过非池化数据源创建一个新的数据库连接，创建的时候定义是属于这个数据源的。底层就是DriverManger#getConnection
                         conn = new PooledConnection(dataSource.getConnection(), this);
                         if (log.isDebugEnabled()) {
                             log.debug("Created connection " + conn.getRealHashCode() + ".");
@@ -490,7 +498,7 @@ public class PooledDataSource implements DataSource {
                             state.accumulatedCheckoutTime += longestCheckoutTime;
                             // 因逾期不还从连接池中移除
                             state.activeConnections.remove(oldestActiveConnection);
-                            // 如果这个连接不是auto commit的，尝试将其回滚
+                            // 如果这个连接不是auto commit的，尝试将其事务回滚
                             if (!oldestActiveConnection.getRealConnection().getAutoCommit()) {
                                 try {
                                     oldestActiveConnection.getRealConnection().rollback();
@@ -547,7 +555,7 @@ public class PooledDataSource implements DataSource {
                         if (!conn.getRealConnection().getAutoCommit()) {
                             conn.getRealConnection().rollback();
                         }
-                        // 配置该链接的信息，
+                        // 配置该链接的信息，包括连接类型编码，确保归还时校验正确
                         conn.setConnectionTypeCode(assembleConnectionTypeCode(dataSource.getUrl(), username, password));
                         conn.setCheckoutTimestamp(System.currentTimeMillis());
                         conn.setLastUsedTimestamp(System.currentTimeMillis());
@@ -598,7 +606,7 @@ public class PooledDataSource implements DataSource {
         boolean result = true;
 
         try {
-            // 检擦连接是否关闭
+            // 检查连接是否关闭
             result = !conn.getRealConnection().isClosed();
         } catch (SQLException e) {
             if (log.isDebugEnabled()) {

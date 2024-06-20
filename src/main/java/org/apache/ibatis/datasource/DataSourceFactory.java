@@ -20,13 +20,13 @@ import java.util.Properties;
 
 /**
  * @author Clinton Begin
- * 数据源得工厂方法接口，各种数据源实现这个接口
+ * 数据源的工厂方法接口，定义了数据源工厂必须实现的方法
  */
 public interface DataSourceFactory {
     /**
-     * 用于设置工厂的属性
+     * 设置工厂的属性
      *
-     * @param props
+     * @param props 属性
      */
     void setProperties(Properties props);
 

@@ -15,5 +15,6 @@
  */
 /**
  * Base package for Datasources.
+ * 本包负责mybatis和数据库交互
  */
 package org.apache.ibatis.datasource;

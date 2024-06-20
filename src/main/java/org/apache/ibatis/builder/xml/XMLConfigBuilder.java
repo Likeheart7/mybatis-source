@@ -413,7 +413,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
 
     /**
-     * 解析数据源配置信息
+     * 解析数据源配置信息，即dataSource标签
      *
      * @param context 被解析的节点
      * @return 根据信息创建的数据源工厂

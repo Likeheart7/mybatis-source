@@ -25,7 +25,7 @@ import java.util.Properties;
 
 /**
  * @author Clinton Begin
- * 非池化得数据源
+ * 非池化数据源的工厂
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {
 
@@ -40,7 +40,10 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
     }
 
     /**
-     * 设置数据源属性的额方法
+     * 设置数据源属性的方法
+     * 分为两类：
+     * 1. driver.开头的设置给数据源内包含的DriverManger对象
+     * 2. 其他的设置给数据源本身
      *
      * @param properties 配置信息
      */
@@ -58,7 +61,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
                 String value = properties.getProperty(propertyName);
                 driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
             } else if (metaDataSource.hasSetter(propertyName)) {
-
+                // 通过反射为DataSource设置其他属性
                 String value = (String) properties.get(propertyName);
                 // 将配置信息的类型转为合适的类型
                 Object convertedValue = convertValue(metaDataSource, propertyName, value);
@@ -70,6 +73,7 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
         }
         // 将以"driver."开头的配置信息放入DataSource的driverProperties属性中
         if (driverProperties.size() > 0) {
+            // 将driver.开头的放入DataSource的driverProperties属性中
             metaDataSource.setValue("driverProperties", driverProperties);
         }
     }

@@ -25,7 +25,7 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
- * 对Connection的封装
+ * 对Connection的封装，本类重写了连接的关闭逻辑，让数据库连接在调用close时不会真正被关闭
  */
 class PooledConnection implements InvocationHandler {
 
@@ -243,7 +243,7 @@ class PooledConnection implements InvocationHandler {
             return null;
         }
         try {
-            // 只要不是Object里面定义的方法，就先检测当前PooledConnection是否可用，实际就是判断valid的值
+            // 不是Object里面定义的方法或close方法，检测连接是否可用，实际就是判断valid的值
             if (!Object.class.equals(method.getDeclaringClass())) {
                 // issue #579 toString() should never fail
                 // throw an SQLException instead of a Runtime
