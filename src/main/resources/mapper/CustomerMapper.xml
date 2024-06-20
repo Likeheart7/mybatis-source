@@ -31,11 +31,11 @@
         #{id}
     </sql>
     <!--自定义SQL语句-->
-    <select id="find" resultMap="customerSimpleMap">
-        select * from t_customer
-        /*测试include是怎么被sql标签替换的*/
-        <include refid="demoSqlFragment"/>
-    </select>
+    <!--    <select id="find" resultMap="customerSimpleMap">-->
+    <!--        select * from t_customer-->
+    <!--        /*测试include是怎么被sql标签替换的*/-->
+    <!--        <include refid="demoSqlFragment"/>-->
+    <!--    </select>-->
     <select id="findWithAddress" resultMap="customerMap">
         SELECT c.*, a.id as address_id, a.*
         FROM t_customer as c
