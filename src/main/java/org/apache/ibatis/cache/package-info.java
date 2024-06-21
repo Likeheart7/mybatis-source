@@ -15,6 +15,7 @@
  */
 /**
  * Base package for caching stuff.
- * 该模块主要是缓存相关
+ * 该模块负责缓存，只提供缓存能力，不涉及具体缓存功能的使用。
+ * 组建缓存的地方见 {@link org.apache.ibatis.mapping.CacheBuilder#build()}
  */
 package org.apache.ibatis.cache;

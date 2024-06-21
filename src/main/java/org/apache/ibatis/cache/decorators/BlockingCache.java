@@ -32,12 +32,13 @@ import java.util.concurrent.TimeUnit;
  * <p>By its nature, this implementation can cause deadlock when used incorrecly.
  *
  * @author Eduardo Macarron
- * 在原有的缓存上加了阻塞
+ * 阻塞装饰器，提供阻塞功能。防止多个线程同时请求一个未命中缓存的数据时，多个线程都去查询数据库、建立缓存。
  */
 public class BlockingCache implements Cache {
 
     // 指定一个线程阻塞的超时时间
     private long timeout;
+    // 被装饰的对象，实际存储缓存的地方
     private final Cache delegate;
     // 为每个key分配一个CountDownLatch对象来做并发控制
     private final ConcurrentHashMap<Object, CountDownLatch> locks;

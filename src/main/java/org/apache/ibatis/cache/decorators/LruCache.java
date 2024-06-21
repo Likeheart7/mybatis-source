@@ -22,18 +22,19 @@ import java.util.Map;
 
 /**
  * Lru (least recently used) cache decorator.
- * 最近最少使用，
+ * 最近最少使用的淘汰策略
+ *
  * @author Clinton Begin
  */
 public class LruCache implements Cache {
 
     private final Cache delegate;
-    private Map<Object, Object> keyMap;
-    private Object eldestKey;
+    private Map<Object, Object> keyMap; // 保存缓存数据的键，实际使用的LinkedHashMap，为了使用他的排序功能
+    private Object eldestKey;   // 记录最近最少使用的键
 
     public LruCache(Cache delegate) {
         this.delegate = delegate;
-        setSize(1024);
+        setSize(1024);  //默认缓存数量
     }
 
     @Override
@@ -50,8 +51,12 @@ public class LruCache implements Cache {
         keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
             private static final long serialVersionUID = 4267176411845948333L;
 
+            /**
+             * 重写了removeEldestEntry方法，该方法在每次向LinkedHashMap放入数据时触发。
+             */
             @Override
             protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
+                // 如果缓存键数量满了，记录eldestKey
                 boolean tooBig = size() > size;
                 if (tooBig) {
                     eldestKey = eldest.getKey();
@@ -69,6 +74,7 @@ public class LruCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
+        // 访问一下当前被访问的键，会将它前移
         keyMap.get(key); // touch
         return delegate.getObject(key);
     }
@@ -84,6 +90,11 @@ public class LruCache implements Cache {
         keyMap.clear();
     }
 
+    /**
+     * 每次插入缓存时调用该方法，将新插入的键放入keyMap并删除eldestKey这个键对应的对象
+     *
+     * @param key 新插入的键
+     */
     private void cycleKeyList(Object key) {
         keyMap.put(key, key);
         if (eldestKey != null) {

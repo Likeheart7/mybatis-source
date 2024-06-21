@@ -29,8 +29,8 @@ import java.util.LinkedList;
 public class FifoCache implements Cache {
 
     private final Cache delegate;
-    private final Deque<Object> keyList; // 这里存储的说所有缓存的key
-    private int size;
+    private final Deque<Object> keyList; // 按顺序存储了所有缓存的key
+    private int size;   // 缓存最大数量
 
     public FifoCache(Cache delegate) {
         this.delegate = delegate;
@@ -52,8 +52,12 @@ public class FifoCache implements Cache {
         this.size = size;
     }
 
+    /**
+     * 插入缓存
+     */
     @Override
     public void putObject(Object key, Object value) {
+        // 缓存是否已满，满则清理第一个放入的键
         cycleKeyList(key);
         delegate.putObject(key, value);
     }

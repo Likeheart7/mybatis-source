@@ -23,14 +23,15 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
- * 实现了缓存最基础的操作，用来被缓存装饰器装饰
+ * 实现了缓存最基础的操作，被缓存装饰器装饰
+ * 实际上本类就是一个附带 id的 HashMap
  */
 public class PerpetualCache implements Cache {
 
-    // 缓存对象唯一标识
+    // 缓存对象唯一标识，一半是namespace的值，保证不同映射文件之间缓存不同。
     private final String id;
 
-    // 存储缓存的结构，最终缓存就是存在这个map里面的
+    // 存储缓存的结构，缓存就是存在这个map里面的
     private final Map<Object, Object> cache = new HashMap<>();
 
     public PerpetualCache(String id) {

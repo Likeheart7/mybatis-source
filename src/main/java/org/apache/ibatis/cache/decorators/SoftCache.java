@@ -25,7 +25,8 @@ import java.util.LinkedList;
 /**
  * Soft Reference cache decorator
  * Thanks to Dr. Heinz Kabutz for his guidance here.
- * 软引用缓存：内存满时软引用会被GC回收掉
+ * 软引用淘汰策略：内存满时软引用会被GC回收掉
+ * 整体类似WeakCache
  *
  * @author Clinton Begin
  */
