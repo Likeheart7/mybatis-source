@@ -42,7 +42,7 @@ public class CacheBuilder {
     private final List<Class<? extends Cache>> decorators;
     // cache的大小
     private Integer size;
-    // cache的清理间隔
+    // cache的清理间隔，对应flushInterval属性
     private Long clearInterval;
     // 是否可读写
     private boolean readWrite;
@@ -94,9 +94,9 @@ public class CacheBuilder {
     }
 
     /**
-     * 构建缓存对对象的方法
+     * 构建缓存对象的方法
      *
-     * @return
+     * @return 缓存对象
      */
     public Cache build() {
         // 实现默认使用PerpetualCache，装饰器默认配一个LRU
@@ -139,6 +139,7 @@ public class CacheBuilder {
     /**
      * 为缓存增加标准的装饰器
      * 就是用装饰器一层一层包裹cache
+     * 解析cache标签时会用到
      *
      * @param cache 要被装饰的缓存
      * @return 装饰好的缓存
@@ -156,6 +157,8 @@ public class CacheBuilder {
                 ((ScheduledCache) cache).setClearInterval(clearInterval);
             }
             // 如果设置了读写权限，用序列化缓存装饰器装饰
+            // eadOnly（只读）属性可以被设置为 true 或 false。只读的缓存会给所有调用者返回缓存对象的相同实例。
+            // 因此这些对象不能被修改。这就提供了可观的性能提升。而可读写的缓存会（通过序列化）返回缓存对象的拷贝。 速度上会慢一些，但是更安全，因此默认值是 false。
             if (readWrite) {
                 cache = new SerializedCache(cache);
             }
@@ -220,6 +223,13 @@ public class CacheBuilder {
         }
     }
 
+    /**
+     * 创建缓存实例
+     *
+     * @param cacheClass 缓存实现类
+     * @param id         缓存标识
+     * @return 构建的缓存对象
+     */
     private Cache newBaseCacheInstance(Class<? extends Cache> cacheClass, String id) {
         Constructor<? extends Cache> cacheConstructor = getBaseCacheConstructor(cacheClass);
         try {

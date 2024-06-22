@@ -6,6 +6,8 @@ import com.chenx.learning.pojo.Customer;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
 
+import java.util.List;
+
 public interface CustomerMapper {
     // 根据Id查询Customer（不查询Address）
     // @*Provider允许指定一个返回字符串的方法，来提供对应的sql
@@ -20,4 +22,7 @@ public interface CustomerMapper {
 
     // 持久化Customer对象
     int save(Customer customer);
+
+    // 获取所有Customer
+    List<Customer> findAllCustomer();
 }

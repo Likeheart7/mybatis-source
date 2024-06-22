@@ -5,6 +5,7 @@ import org.junit.Test;
 
 public class CustomerServiceTest {
     CustomerService customerService = new CustomerService();
+
     /**
      * 注册一个用户
      */
@@ -13,6 +14,7 @@ public class CustomerServiceTest {
         long result = customerService.register("chen", "123456");
         System.out.println("this user's id is " + result);
     }
+
     /**
      * 给id为1的用户添加三个地址
      */
@@ -38,9 +40,19 @@ public class CustomerServiceTest {
         System.out.println(customerService.find(1));
     }
 
-    /** 根据用户id查询对应地址*/
+    /**
+     * 根据用户id查询对应地址
+     */
     @Test
     public void testFindAllAddress() {
         System.out.println(customerService.findAllAddress(1));
+    }
+
+    /**
+     * 获取全部customer
+     */
+    @Test
+    public void testFindAllCustomer() {
+        System.out.println(customerService.findAllCustomer());
     }
 }

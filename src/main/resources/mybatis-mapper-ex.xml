@@ -7,7 +7,7 @@
     <!--由CacheRefResolver解析-->
     <cache-ref namespace="com.chenx.learning.dao"/>
     <!--对应Cache类-->
-    <cache eviction="=FIFO" flushInterval="60000"/>
+    <cache eviction="FIFO" flushInterval="60000"/>
 
     <parameterMap id="userParam01" type="User">
         <!--对应ParameterMap类-->

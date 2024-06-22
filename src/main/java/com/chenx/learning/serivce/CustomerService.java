@@ -107,4 +107,14 @@ public class CustomerService {
             return mapper.findWithAddress(id);
         });
     }
+
+    /**
+     * 获取全部Customer
+     */
+    public List<Customer> findAllCustomer() {
+        return DaoUtils.execute(sqlSession -> {
+            CustomerMapper mapper = sqlSession.getMapper(CustomerMapper.class);
+            return mapper.findAllCustomer();
+        });
+    }
 }

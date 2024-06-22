@@ -58,4 +58,11 @@
         insert into t_customer (id, name, phone)
         values (#{id}, #{name}, #{phone})
     </insert>
+
+    <select id="findAllCustomer" resultType="Customer">
+        select *
+        from t_customer
+    </select>
+    <!--开启二级缓存-->
+    <cache/>
 </mapper>

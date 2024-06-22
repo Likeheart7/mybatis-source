@@ -41,7 +41,7 @@ public class TransactionalCache implements Cache {
 
     private static final Log log = LogFactory.getLog(TransactionalCache.class);
 
-    // 被装饰的对象
+    // 二级缓存真正存储数据的地方
     private final Cache delegate;
     private boolean clearOnCommit;  // 如果为true，则只要事务结束，就会直接将暂时保存的数据销毁掉
     private final Map<Object, Object> entriesToAddOnCommit; // 保存事务中产生的数据，在事务提交时一并交给缓存，或在回滚时一并销毁

@@ -16,6 +16,7 @@
 package org.apache.ibatis.cache;
 
 import org.apache.ibatis.cache.decorators.TransactionalCache;
+import org.apache.ibatis.session.SqlSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 public class TransactionalCacheManager {
 
-    // 保存了多个缓存和对应的经过缓存装饰器装饰后的缓存
+    // 保存了Cache和对应的存放二级缓存的TransactionalCache
     private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap<>();
 
     public void clear(Cache cache) {
@@ -42,7 +43,11 @@ public class TransactionalCacheManager {
     }
 
     /**
-     * 在事务提交和回滚时触发所有相关事务缓存的提交
+     * 在事务提交时触发所有相关事务缓存的提交
+     * 一般情况下调用来源如下：
+     * 手动调用{@link SqlSession#commit()}, 实际上调用的实现是{@link org.apache.ibatis.session.defaults.DefaultSqlSession#commit} -->
+     * {@link org.apache.ibatis.executor.CachingExecutor#commit(boolean)} --> 本方法 --> {@link TransactionalCache#commit()}
+     * 所以会触发将事务缓存管理器的内容全都提交到缓存中
      */
     public void commit() {
         for (TransactionalCache txCache : transactionalCaches.values()) {
@@ -51,7 +56,7 @@ public class TransactionalCacheManager {
     }
 
     /**
-     * 在事务提交和回滚时触发所有相关事务缓存的回滚
+     * 在事务回滚时触发所有相关事务缓存的回滚
      */
     public void rollback() {
         for (TransactionalCache txCache : transactionalCaches.values()) {

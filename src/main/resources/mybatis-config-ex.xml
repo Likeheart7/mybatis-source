@@ -10,6 +10,8 @@
     </properties>
     <settings>
         <setting name="cacheEnabled" value="true"/>
+        <!--日志打印到控制台-->
+        <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
     </settings>
     <!--对应TypeAliasRegistry类-->
     <typeAliases>

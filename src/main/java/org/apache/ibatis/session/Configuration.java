@@ -695,7 +695,8 @@ public class Configuration {
         } else {
             executor = new SimpleExecutor(this, transaction);
         }
-        // 根据settings节点的cacheEnabled决定是否启用缓存
+        // 根据settings节点的cacheEnabled决定是否启用二级缓存
+        // 如果启用了二级缓存，就用CachingExecutor装饰类装饰一下，使实际执行器拥有缓存功能。
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }

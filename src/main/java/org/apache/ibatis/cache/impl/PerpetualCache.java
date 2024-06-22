@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class PerpetualCache implements Cache {
 
-    // 缓存对象唯一标识，一半是namespace的值，保证不同映射文件之间缓存不同。
+    // 缓存对象唯一标识，一般是namespace的值，保证不同映射文件之间缓存不同。
     private final String id;
 
     // 存储缓存的结构，缓存就是存在这个map里面的

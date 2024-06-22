@@ -42,7 +42,7 @@ import static org.apache.ibatis.executor.ExecutionPlaceholder.EXECUTION_PLACEHOL
 
 /**
  * @author Clinton Begin
- * 主要定义了方法的流程
+ * 主要定义了执行方法的流程
  */
 public abstract class BaseExecutor implements Executor {
 
@@ -52,8 +52,9 @@ public abstract class BaseExecutor implements Executor {
     protected Executor wrapper;
 
     protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
-    protected PerpetualCache localCache;  // 缓存其他查询的查询结果
-    protected PerpetualCache localOutputParameterCache; // 缓存存储过程的输出参数
+    // 提供一级缓存的两个属性
+    protected PerpetualCache localCache;  // 缓存查询操作的结果
+    protected PerpetualCache localOutputParameterCache; // 缓存Callable查询的输出参数
     protected Configuration configuration;
 
     protected int queryStack;
@@ -104,13 +105,24 @@ public abstract class BaseExecutor implements Executor {
         return closed;
     }
 
+    /**
+     * 更新操作，包括insert、update、delete，会触发缓存的更新
+     *
+     * @param ms        映射语句
+     * @param parameter 参数
+     * @return 数据库操作结果
+     * @throws SQLException
+     */
     @Override
     public int update(MappedStatement ms, Object parameter) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing an update").object(ms.getId());
+        // 如果执行器已经关闭，直接抛出异常
         if (closed) {
             throw new ExecutorException("Executor was closed.");
         }
+        // 清理本地缓存
         clearLocalCache();
+        // 返回调用子类进行操作
         return doUpdate(ms, parameter);
     }
 
@@ -126,6 +138,17 @@ public abstract class BaseExecutor implements Executor {
         return doFlushStatements(isRollBack);
     }
 
+    /**
+     * 数据查询操作
+     * 可以看到在执行查询操作之前，会使用boundSql对象创建缓存key
+     *
+     * @param ms            映射语句
+     * @param parameter     参数对象
+     * @param rowBounds     分页限制
+     * @param resultHandler 结果处理器
+     * @return 查询结果
+     * @throws SQLException
+     */
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
         BoundSql boundSql = ms.getBoundSql(parameter);
@@ -134,14 +157,28 @@ public abstract class BaseExecutor implements Executor {
         return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
     }
 
+    /**
+     * 执行查询的核心方法
+     *
+     * @param ms            映射语句对象
+     * @param parameter     参数对象
+     * @param rowBounds     分页限制
+     * @param resultHandler 结果处理器
+     * @param key           缓存的键
+     * @param boundSql      解析后的SQL语句
+     * @param <E>           输出结果类型
+     * @return 查询结果
+     * @throws SQLException
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
+        // 如果执行器已经关闭，直接抛出异常
         if (closed) {
             throw new ExecutorException("Executor was closed.");
         }
-        // 非嵌套查询，并且<select>标签配置的flushCache属性为true时，才会清空一级缓存
+        // 新的查询栈，并且<select>标签配置的flushCache属性为true时，会清空一级缓存
         if (queryStack == 0 && ms.isFlushCacheRequired()) {
             clearLocalCache();
         }
@@ -157,16 +194,17 @@ public abstract class BaseExecutor implements Executor {
                 list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
             }
         } finally {
-            queryStack--; // 当前查询完成，查询层数 --
+            queryStack--; // 当前查询完成，出栈
         }
         // 完成嵌套查询的填充
         if (queryStack == 0) {
+            // 处理懒加载操作的
             for (DeferredLoad deferredLoad : deferredLoads) {
                 deferredLoad.load();
             }
             // issue #601
             deferredLoads.clear();
-            // 根据配置决定是否清空localCache
+            // 根据配置决定是否清空localCache，如果当前查询作用域是Statement，则立即清除本地缓存
             if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
                 // issue #482
                 clearLocalCache();
@@ -194,11 +232,22 @@ public abstract class BaseExecutor implements Executor {
         }
     }
 
+    /**
+     * 创建缓存key
+     * 生成的CacheKey对象中，包含了查询的id、分页限制、数据总量、完整的sql语句，保证了判断两次查询的一致
+     *
+     * @param ms              映射语句对象
+     * @param parameterObject 参数对象
+     * @param rowBounds       分页限制
+     * @param boundSql        解析后的sql语句
+     * @return 创建出来的CacheKey 缓存键
+     */
     @Override
     public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
         if (closed) {
             throw new ExecutorException("Executor was closed.");
         }
+        // 创建缓存键的地方，将所有查询参数依次写入
         CacheKey cacheKey = new CacheKey();
         cacheKey.update(ms.getId());
         cacheKey.update(rowBounds.getOffset());
@@ -319,6 +368,9 @@ public abstract class BaseExecutor implements Executor {
         }
     }
 
+    /**
+     * 从数据库查询数据，查询后缓存查询结果
+     */
     private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         List<E> list;
         localCache.putObject(key, EXECUTION_PLACEHOLDER);

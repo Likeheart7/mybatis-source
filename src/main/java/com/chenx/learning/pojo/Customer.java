@@ -1,10 +1,11 @@
 package com.chenx.learning.pojo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Customer {
+public class Customer implements Serializable {
     private Long id;
     private String name;
     private String phone;

@@ -12,6 +12,8 @@
     <settings>
         <!--全局性地开启或关闭所有映射器配置文件中已配置的任何缓存。-->
         <setting name="cacheEnabled" value="true"/>
+        <!--日志打印到控制台-->
+        <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
     </settings>
     <!--配置别名信息-->
     <!--mybatis-config.xml配置文件配置的别名可以在mapper层的xml文件中使用-->
@@ -23,12 +25,12 @@
         <typeAlias type="com.chenx.learning.pojo.Address" alias="Address"/>
     </typeAliases>
 
-    <plugins>
-        <plugin interceptor="com.chenx.learning.plugin.DemoPlugin">
-            <!--初始化拦截器属性-->
-            <property name="logLevel" value="1"/>
-        </plugin>
-    </plugins>
+    <!--    <plugins>-->
+    <!--        <plugin interceptor="com.chenx.learning.plugin.DemoPlugin">-->
+    <!--            &lt;!&ndash;初始化拦截器属性&ndash;&gt;-->
+    <!--            <property name="logLevel" value="1"/>-->
+    <!--        </plugin>-->
+    <!--    </plugins>-->
     <!--环境配置，default表示默认选择的环境-->
     <environments default="dev">
         <environment id="dev">
