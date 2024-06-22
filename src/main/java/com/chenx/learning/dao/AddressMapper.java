@@ -2,6 +2,8 @@ package com.chenx.learning.dao;
 
 import com.chenx.learning.pojo.Address;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.cursor.Cursor;
 
 import java.util.List;
 
@@ -20,4 +22,8 @@ public interface AddressMapper {
              @Param("customerId") long customerId);
 
     int updateBatch();
+
+    //游标查询
+    @Select("select * from t_address")
+    Cursor<Address> queryAllWithCursor();
 }

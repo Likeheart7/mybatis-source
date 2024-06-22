@@ -15,5 +15,6 @@
  */
 /**
  * Base package for cursor feature.
+ * 游标相关，在返回结果集很大的时候，可以采用游标
  */
 package org.apache.ibatis.cursor;
