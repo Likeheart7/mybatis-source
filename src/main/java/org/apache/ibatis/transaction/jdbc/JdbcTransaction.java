@@ -30,7 +30,7 @@ import java.sql.SQLException;
  * It relies on the connection retrieved from the dataSource to manage the scope of the transaction.
  * Delays connection retrieval until getConnection() is called.
  * Ignores commit or rollback requests when autocommit is on.
- * 对Transactional接口的一个实现
+ * 实现JDBC事务的类，具体的操作由调用connection的方法实现
  *
  * @author Clinton Begin
  * @see JdbcTransactionFactory
@@ -39,7 +39,7 @@ public class JdbcTransaction implements Transaction {
 
     private static final Log log = LogFactory.getLog(JdbcTransaction.class);
 
-    protected Connection connection;  // 连接
+    protected Connection connection;  // 数据库连接
     protected DataSource dataSource;  // 数据源
     protected TransactionIsolationLevel level; // 事务隔离级别
     protected boolean autoCommit; // 是否自动提交
@@ -55,7 +55,7 @@ public class JdbcTransaction implements Transaction {
     }
 
     /**
-     * 获取数据库连接，底层调用dataSource来获取
+     * 获取数据库连接，底层调用dataSource#getConnection来获取
      */
     @Override
     public Connection getConnection() throws SQLException {
@@ -70,10 +70,12 @@ public class JdbcTransaction implements Transaction {
      */
     @Override
     public void commit() throws SQLException {
+        // 连接存在且非自动提交
         if (connection != null && !connection.getAutoCommit()) {
             if (log.isDebugEnabled()) {
                 log.debug("Committing JDBC Connection [" + connection + "]");
             }
+            // 调用connection的对应方法提交事务
             connection.commit();
         }
     }
@@ -83,10 +85,12 @@ public class JdbcTransaction implements Transaction {
      */
     @Override
     public void rollback() throws SQLException {
+        // 连接存在且非自动提交
         if (connection != null && !connection.getAutoCommit()) {
             if (log.isDebugEnabled()) {
                 log.debug("Rolling back JDBC Connection [" + connection + "]");
             }
+            // 调用connection对应的方法提交
             connection.rollback();
         }
     }

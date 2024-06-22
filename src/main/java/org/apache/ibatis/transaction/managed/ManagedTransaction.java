@@ -31,8 +31,8 @@ import java.sql.SQLException;
  * By default, it closes the connection but can be configured not to do it.
  *
  * @author Clinton Begin
- * 由容器管理事务
- * 所以这里很多方法没有执行操作
+ * 由容器管理事务,这里很多方法没有执行操作，而是交给容器实现去处理。
+ * 以Spring为例，当Mybatis与其集成时，Mybatis拿到的数据库连接对象由Spring给出，spring通过配置管理事务。
  * @see ManagedTransactionFactory
  */
 public class ManagedTransaction implements Transaction {

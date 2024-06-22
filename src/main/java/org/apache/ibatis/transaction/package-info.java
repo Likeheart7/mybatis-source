@@ -15,5 +15,7 @@
  */
 /**
  * Base package for transactions.
+ * 负责进行事务管理
+ * 当Mybatis和Spring集成时，会通过SpringManagedTransactionFactory、SpringManagedTransaction来管理事务
  */
 package org.apache.ibatis.transaction;

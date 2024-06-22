@@ -15,5 +15,6 @@
  */
 /**
  * JDBC transaction.
+ * 包含基于JDBC进行事务管理的类
  */
 package org.apache.ibatis.transaction.jdbc;
