@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * 处理PrepareStatement的实现类
+ * 处理PrepareStatement的实现类，实现了parameterize方法来处理？占位符
  */
 public class PreparedStatementHandler extends BaseStatementHandler {
 

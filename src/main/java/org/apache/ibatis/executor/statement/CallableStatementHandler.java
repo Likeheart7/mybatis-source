@@ -29,7 +29,10 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * 处理存储过程的
+ * 处理存储过程的实现。
+ * 它一共完成两步工作
+ * ：一是通过 registerOutputParameters方法中转后调用 java.sql.CallableStatement中的输出参数注册方法完成输出参数的注册；
+ * 二是通过 ParameterHandler接口经过多级中转后调用 java.sql.PreparedStatement类中的参数赋值方法
  */
 public class CallableStatementHandler extends BaseStatementHandler {
 
@@ -86,9 +89,17 @@ public class CallableStatementHandler extends BaseStatementHandler {
         }
     }
 
+    /**
+     * 对语句中的参数进行处理
+     *
+     * @param statement statement对象，代表SQL语句
+     * @throws SQLException
+     */
     @Override
     public void parameterize(Statement statement) throws SQLException {
+        // 输出参数的注册
         registerOutputParameters((CallableStatement) statement);
+        // 输入参数的处理
         parameterHandler.setParameters((CallableStatement) statement);
     }
 

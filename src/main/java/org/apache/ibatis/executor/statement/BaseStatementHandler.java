@@ -37,7 +37,7 @@ import java.sql.Statement;
  * @author Clinton Begin
  * StatementHandler的一个抽象实现类，实现了其prepare方法，其中设置了timeout、fetchSize等属性
  * 新增了一个instantiateStatement用于给子类实现，来对Statement初始化过程添加操作
- * 并没有实现StatementHandler的核心方法
+ * 并没有实现StatementHandler的核心方法，而是交由子类自己实现
  */
 public abstract class BaseStatementHandler implements StatementHandler {
 

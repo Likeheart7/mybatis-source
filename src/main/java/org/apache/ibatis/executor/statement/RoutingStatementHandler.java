@@ -33,10 +33,11 @@ import java.util.List;
  * @author Clinton Begin
  * 构造器根据传入的MappedStatement的statementType字段值，选择相应的StatementHandler实现进行创建，由delegate字段维护
  * StatementHandler的操作都委托给delegate属性持有的实现类
+ * 本类提供的就是路由功能，根据statementType字段，路由到具体的代理对象
  */
 public class RoutingStatementHandler implements StatementHandler {
 
-    private final StatementHandler delegate; // 具体用于处理的StatementHandler的实现类
+    private final StatementHandler delegate; // 具体用于处理的StatementHandler的实现类，根据语句类型选取
 
     public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         // 根据MappedStatement的配置，生成一个相应的StatementHandler对象，并设置到delegate字段中维护

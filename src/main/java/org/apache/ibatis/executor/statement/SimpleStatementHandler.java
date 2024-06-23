@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * 用于处理Statement语句的实现类，不会包含“？”占位符，parameterize是空实现
+ * 用于处理Statement语句的实现类，不会包含“？”占位符，parameterize方法是空实现。
  */
 public class SimpleStatementHandler extends BaseStatementHandler {
 

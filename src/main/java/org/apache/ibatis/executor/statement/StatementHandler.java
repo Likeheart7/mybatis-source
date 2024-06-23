@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * 定义了SQL执行的操作
+ * 所有Statement处理相关的类的父接口
  */
 public interface StatementHandler {
 
