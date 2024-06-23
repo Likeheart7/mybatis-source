@@ -39,11 +39,16 @@ import java.util.List;
  */
 public class DefaultParameterHandler implements ParameterHandler {
 
+    // 类型处理器注册表
     private final TypeHandlerRegistry typeHandlerRegistry;
 
+    // MappedStatement对象，包含完整的增删改查节点信息
     private final MappedStatement mappedStatement;
+    // 参数对象
     private final Object parameterObject;
+    // BoundSql对象，包含SQL语句、参数、实参信息
     private final BoundSql boundSql;
+    // 配置信息
     private final Configuration configuration;
 
     public DefaultParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
@@ -60,18 +65,24 @@ public class DefaultParameterHandler implements ParameterHandler {
     }
 
     /**
+     * 为语句设置参数
      * 根据BoundSql.parameterMappings中的“？”占位符的记录，根据参数名称查找替换相应实参
      * 通过PreparedStatement.set*()方法与SQL语句进行绑定
+     *
+     * @param ps 语句
      */
     @Override
     public void setParameters(PreparedStatement ps) {
         ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
+        // 获取参数列表
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         if (parameterMappings != null) {
             for (int i = 0; i < parameterMappings.size(); i++) {
                 ParameterMapping parameterMapping = parameterMappings.get(i);
+                // ParamterMode.OUT是CallableStatement的输出参数，会单独注册，所以这里判断一下
                 if (parameterMapping.getMode() != ParameterMode.OUT) {
                     Object value;
+                    // 获取属性名称
                     String propertyName = parameterMapping.getProperty();
                     // 获取实参值
                     if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
@@ -79,12 +90,14 @@ public class DefaultParameterHandler implements ParameterHandler {
                     } else if (parameterObject == null) {
                         value = null;
                     } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+                        //参数对象是基本类型，则参数对象就是参数值
                         value = parameterObject;
                     } else {
+                        // 参数对象是复杂类型，取出参数对象对应的属性值
                         MetaObject metaObject = configuration.newMetaObject(parameterObject);
                         value = metaObject.getValue(propertyName);
                     }
-                    // 获取TypeHandler
+                    // 获取该参数的TypeHandler
                     TypeHandler typeHandler = parameterMapping.getTypeHandler();
                     JdbcType jdbcType = parameterMapping.getJdbcType();
                     if (value == null && jdbcType == null) {
