@@ -1,8 +1,9 @@
 package com.chenx.learning.pojo;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Address {
+public class Address implements Serializable {
     private long id;
     private String street;
     private String city;

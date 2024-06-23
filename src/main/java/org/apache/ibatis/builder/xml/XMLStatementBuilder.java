@@ -90,13 +90,15 @@ public class XMLStatementBuilder extends BaseBuilder {
         processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
         // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
+        // 此时，selectKey标签和include标签都被解析完毕并且删除掉了
         KeyGenerator keyGenerator;
         String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
         keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
+        // 判断是否有已经解析好的KeyGenerator
         if (configuration.hasKeyGenerator(keyStatementId)) {
             keyGenerator = configuration.getKeyGenerator(keyStatementId);
         } else {
-            // 全局或者本语句启用key生成，则使用
+            // 全局或者本语句启用key生成，则使用key生成
             keyGenerator = context.getBooleanAttribute("useGeneratedKeys",
                     configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
                     ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
@@ -131,6 +133,7 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     /**
      * 根据selectKey标签的额各个属性，将其中的SQL解析成MappedStatement对象
+     * 关于selectKey，见{@link SelectKeyGenerator}类注释
      */
     private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {
         List<XNode> selectKeyNodes = context.evalNodes("selectKey");

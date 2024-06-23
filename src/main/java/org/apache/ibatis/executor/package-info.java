@@ -15,5 +15,8 @@
  */
 /**
  * Contains the statement executors.
+ * 核心包，连接着整个项目
+ * 本包会调用配置解析包解析出的配置信息，会依赖基础包中提供的基础功能。
+ * 最终，executor包将所有的操作串接在了一起，通过 session包向外暴露出一套完整的服务。
  */
 package org.apache.ibatis.executor;

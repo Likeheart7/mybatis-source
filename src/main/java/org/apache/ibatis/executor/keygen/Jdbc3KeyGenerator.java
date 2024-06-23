@@ -38,7 +38,8 @@ import java.util.Map.Entry;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
- * 用于获取数据库生成的自增id，mysql那种
+ * 用于支持主键自增的数据库，如MySQL
+ * 因为数据库本身已经支持自增主键了，本类提供的是主键回写的功能。将数据库自增的主键值，回写到插入数据库的Java对象上。
  */
 public class Jdbc3KeyGenerator implements KeyGenerator {
 
@@ -54,29 +55,48 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
     private static final String MSG_TOO_MANY_KEYS = "Too many keys are generated. There are only %d target objects. "
             + "You either specified a wrong 'keyProperty' or encountered a driver bug like #1523.";
 
+    /**
+     * 回写主键是在processAfter中执行的，跟本方法没有关系
+     */
     @Override
     public void processBefore(Executor executor, MappedStatement ms, Statement stmt, Object parameter) {
         // do nothing
     }
 
+    /**
+     * 回写主键的实现
+     *
+     * @param executor  执行器
+     * @param ms        映射语句对象
+     * @param stmt      statement对象
+     * @param parameter 查询参数
+     */
     @Override
     public void processAfter(Executor executor, MappedStatement ms, Statement stmt, Object parameter) {
         processBatch(ms, stmt, parameter);
     }
 
+    /**
+     * 回写主键
+     * Statement的getGeneratedKey方法可以获取到生成的自增主键，如果没有产生自增主键，则返回的是结果为空的ResultSet对象
+     */
     public void processBatch(MappedStatement ms, Statement stmt, Object parameter) {
+        // 拿到主键的属性名
         final String[] keyProperties = ms.getKeyProperties();
         if (keyProperties == null || keyProperties.length == 0) {
+            // 如果没有主键，直接结束
             return;
         }
-        // 将数据库生成的主键值作为结果集返回
+        // 将数据库生成的主键值作为结果集返回，实际也就是调用Statement的getGeneratedKeys方法
         try (ResultSet rs = stmt.getGeneratedKeys()) {
+            // 获取输出结果的描述
             final ResultSetMetaData rsmd = rs.getMetaData();
             final Configuration configuration = ms.getConfiguration();
             if (rsmd.getColumnCount() < keyProperties.length) {
+                // 主键数目比结果的数目多，声明有问题，但是获取主键只是附加操作，所以忽略掉了
                 // Error?
             } else {
-                // 将生成的id设置到对应的属性里
+                // 将生成的id赋给实参
                 assignKeys(configuration, rs, rsmd, keyProperties, parameter);
             }
         } catch (Exception e) {

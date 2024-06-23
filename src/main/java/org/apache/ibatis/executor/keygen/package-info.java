@@ -15,5 +15,7 @@
  */
 /**
  * Contains the key generators.
+ * 本包负责主键自增相关，也提供一些支持Mybatis兼容不支持主键自增的数据库，如Oracle
+ * 开启主键自增可以在配置文件的settings标签中添加 <\setting name="useGeneratedKeys" value="true"/>，或者直接在相关映射文件的数据库操作节点上添加useGeneratedKeys="true"属性，再通过keyProperty属性声明主键名称
  */
 package org.apache.ibatis.executor.keygen;

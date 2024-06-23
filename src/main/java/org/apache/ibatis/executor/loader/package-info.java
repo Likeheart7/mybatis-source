@@ -15,5 +15,13 @@
  */
 /**
  * Base package for loading results into beans.
+ * 该包负责支持懒加载
+ * 懒加载的配置方式，在配置文件中添加，一般在resultMap中结合association标签使用:
+ *         <!--全局启用懒加载-->
+ *         <setting name="lazyLoadingEnabled" value="true"/>
+ *         <!--激进懒加载，
+ *         为true时，对对象任一属性的读、写操作，都会触发该对象所有懒加载属性的加载
+ *         为false时，对对象的某一个懒加载属性的读操作会触发该属性的加载-->
+ *         <setting name="aggressiveLazyLoading" value="false"/>
  */
 package org.apache.ibatis.executor.loader;

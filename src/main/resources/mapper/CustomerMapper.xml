@@ -26,6 +26,15 @@
         </collection>
     </resultMap>
 
+    <resultMap id="customerLazyLoadingMap" type="Customer">
+        <id column="id" property="id"/>
+        <!--属性映射-->
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <!--这个column表示查询参数-->
+        <association property="addresses" column="id" select="com.chenx.learning.dao.AddressMapper.find"/>
+    </resultMap>
+
     <sql id="demoSqlFragment">
         where id =
         #{id}
@@ -62,6 +71,12 @@
     <select id="findAllCustomer" resultType="Customer">
         select *
         from t_customer
+    </select>
+
+    <select id="findCustomerLazyLoading" resultMap="customerLazyLoadingMap">
+        select *
+        from t_customer
+        where name = #{name}
     </select>
     <!--开启二级缓存-->
     <cache/>

@@ -25,4 +25,7 @@ public interface CustomerMapper {
 
     // 获取所有Customer
     List<Customer> findAllCustomer();
+
+    // 获取指定customer，用于测试懒加载
+    List<Customer> findCustomerLazyLoading(@Param("name") String name);
 }

@@ -50,7 +50,7 @@ public final class MappedStatement {
     private boolean resultOrdered;
     private SqlCommandType sqlCommandType;
     private KeyGenerator keyGenerator;
-    private String[] keyProperties;
+    private String[] keyProperties; // 主键属性名
     private String[] keyColumns;
     private boolean hasNestedResultMaps;
     private String databaseId;

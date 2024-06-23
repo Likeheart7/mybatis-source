@@ -22,7 +22,8 @@ import java.sql.Statement;
 
 /**
  * @author Clinton Begin
- * 插入数据库后获取主键
+ * 所有主键自增支持的父接口
+ * 解析KeyGenerator的地方是{@link org.apache.ibatis.builder.xml.XMLStatementBuilder}
  */
 public interface KeyGenerator {
 
