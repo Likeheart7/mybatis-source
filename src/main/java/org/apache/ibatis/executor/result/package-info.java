@@ -15,5 +15,7 @@
  */
 /**
  * Contains the result handlers.
+ * 负责将结果汇总成List、Map的形式。
+ * 汇总成Cursor的位于cursor包
  */
 package org.apache.ibatis.executor.result;
