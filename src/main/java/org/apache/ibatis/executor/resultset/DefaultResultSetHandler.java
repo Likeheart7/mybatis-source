@@ -433,12 +433,22 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         return !context.isStopped() && context.getResultCount() < rowBounds.getLimit();
     }
 
+    /**
+     * 根据分页配置，跳过指定的行数
+     *
+     * @param rs        结果集
+     * @param rowBounds 分页配置
+     * @throws SQLException
+     */
     private void skipRows(ResultSet rs, RowBounds rowBounds) throws SQLException {
+        // 结果游标是否只能单步前进。
         if (rs.getType() != ResultSet.TYPE_FORWARD_ONLY) {
             if (rowBounds.getOffset() != RowBounds.NO_ROW_OFFSET) {
+                // 直接让游标移动到指定位置。
                 rs.absolute(rowBounds.getOffset());
             }
         } else {
+            // 逐行让游标单步前进到指定位置。
             for (int i = 0; i < rowBounds.getOffset(); i++) {
                 if (!rs.next()) {
                     break;

@@ -27,6 +27,7 @@ import java.util.Properties;
 
 /**
  * Builds {@link SqlSession} instances.
+ * 创建SqlSessionFactory的工厂，能够根据配置文件来创建
  *
  * @author Clinton Begin
  */
@@ -44,9 +45,19 @@ public class SqlSessionFactoryBuilder {
         return build(reader, null, properties);
     }
 
+    /**
+     * 核心builder方法
+     *
+     * @param reader      读取字符流的抽象类
+     * @param environment 环境信息
+     * @param properties  配置属性信息
+     * @return 创建的SqlSessionFactory对象
+     */
     public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
         try {
+            // 传入配置文件，创建一个XMLConfigBuilder类
             XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
+            // 创建SqlSessionFactory，先解析配置文件，parse()返回一个configuration对象，再将其作为参数创建DefaultSqlSessionFactory
             return build(parser.parse());
         } catch (Exception e) {
             throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -89,6 +100,12 @@ public class SqlSessionFactoryBuilder {
         }
     }
 
+    /**
+     * 根据配置信息创建一个SqlSessionFactory
+     *
+     * @param config 配置信息
+     * @return 创建的SqlSessionFactory对象
+     */
     public SqlSessionFactory build(Configuration config) {
         return new DefaultSqlSessionFactory(config);
     }

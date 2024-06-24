@@ -78,7 +78,7 @@ import java.util.function.BiFunction;
 
 /**
  * @author Clinton Begin
- * 配置信息，对应configuration标签
+ * 包含了Mybatis运行的所有配置信息，对应configuration标签。本类为Mybatis所有部分提供配置信息共享。
  */
 public class Configuration {
 

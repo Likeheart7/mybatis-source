@@ -29,7 +29,7 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
- * 创建DefaultSqlsession的具体实现
+ * SqlSessionFactory的默认实现，会创建DefaultSqlSession的实例
  */
 public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
@@ -85,19 +85,25 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
     }
 
     /**
-     * 核心方法
+     * 实际创建SqlSession的方法
+     *
+     * @param execType   执行器类型。SIMPLE, REUSE, BATCH
+     * @param level      事务隔离级别
+     * @param autoCommit 是否自动提交
+     * @return 创建的SqlSession实例
      */
     private SqlSession openSessionFromDataSource(ExecutorType execType, TransactionIsolationLevel level, boolean autoCommit) {
         Transaction tx = null;
         try {
             // 获取Environment对象
             final Environment environment = configuration.getEnvironment();
+            // 从环境中获取事务工厂
             final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
-            // 从数据源创建Transaction
+            // 从事务工厂生成事务
             tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);
             // 根据配置创建Executor
             final Executor executor = configuration.newExecutor(tx, execType);
-            // 在Executor的基础上创建DefaultSqlSession对
+            // 在Executor的基础上创建DefaultSqlSession
             return new DefaultSqlSession(configuration, executor, autoCommit);
         } catch (Exception e) {
             closeTransaction(tx); // may have fetched a connection so lets call close()
