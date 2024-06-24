@@ -31,13 +31,21 @@ import java.util.*;
  */
 public class ResultSetWrapper {
 
+    // 被装饰的ResultSet类，本类在该类的功能上在做了一些扩展。
     private final ResultSet resultSet;
+    // 类型处理器的注册表
     private final TypeHandlerRegistry typeHandlerRegistry;
+    // resultSet中各列对应的列名列表
     private final List<String> columnNames = new ArrayList<>();
+    // resultSet中各列对应的Java类型列表
     private final List<String> classNames = new ArrayList<>();
+    // resultSet中各列对应的JDBC类型列表
     private final List<JdbcType> jdbcTypes = new ArrayList<>();
+    // 类型与类型处理器映射表，结构为Map<列名, Map<Java类型, 类型处理器>>
     private final Map<String, Map<Class<?>, TypeHandler<?>>> typeHandlerMap = new HashMap<>();
+    // 记录了所有的有映射关系的列，结构为Map<resultMap的id, List<对象映射的列名>>
     private final Map<String, List<String>> mappedColumnNamesMap = new HashMap<>();
+    // 记录了所有的没有映射关系的列，结构为Map<resultMap的id, List<对象映射的列名>>
     private final Map<String, List<String>> unMappedColumnNamesMap = new HashMap<>();
 
     public ResultSetWrapper(ResultSet rs, Configuration configuration) throws SQLException {
@@ -83,10 +91,8 @@ public class ResultSetWrapper {
      * Tries to get from the TypeHandlerRegistry by searching for the property type.
      * If not found it gets the column JDBC type and tries to get a handler for it.
      *
-     * @param propertyType
-     *          the property type
-     * @param columnName
-     *          the column name
+     * @param propertyType the property type
+     * @param columnName   the column name
      * @return the type handler
      */
     public TypeHandler<?> getTypeHandler(Class<?> propertyType, String columnName) {

@@ -24,12 +24,12 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * 处理sql执行后获取到的ResultSet结果集的
+ * 结果集处理器接口。处理sql执行后获取到的ResultSet结果集
  */
 public interface ResultSetHandler {
 
     /**
-     * 将ResultSet映射成Java对象
+     * 将Statement的执行结果处理为List
      */
     <E> List<E> handleResultSets(Statement stmt) throws SQLException;
 
@@ -39,7 +39,7 @@ public interface ResultSetHandler {
     <E> Cursor<E> handleCursorResultSets(Statement stmt) throws SQLException;
 
     /**
-     * 处理存储过程的输出参数
+     * 处理存储过程的输出结果
      */
     void handleOutputParameters(CallableStatement cs) throws SQLException;
 

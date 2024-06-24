@@ -15,5 +15,9 @@
  */
 /**
  * Contains the result processing logic.
+ * 负责
+ *  1. 处理结果映射中的嵌套映射等逻辑
+ *  2. 根据映射关系，生成结果对象
+ *  3. 根据数据库查询记录，对结果对象的属性赋值
  */
 package org.apache.ibatis.executor.resultset;
