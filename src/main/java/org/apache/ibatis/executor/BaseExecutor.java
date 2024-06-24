@@ -42,7 +42,8 @@ import static org.apache.ibatis.executor.ExecutionPlaceholder.EXECUTION_PLACEHOL
 
 /**
  * @author Clinton Begin
- * 主要定义了执行方法的流程
+ * 基类执行器，主要定义了执行方法的流程
+ * 有四个主要子类SimpleExecutor、BatchExecutor、ReuseExecutor、ClosedExecutor
  */
 public abstract class BaseExecutor implements Executor {
 
@@ -106,7 +107,7 @@ public abstract class BaseExecutor implements Executor {
     }
 
     /**
-     * 更新操作，包括insert、update、delete，会触发缓存的更新
+     * 更新操作，包括insert、update、delete，会触发整个命名空间缓存的删除，以此来防止缓存旧数据
      *
      * @param ms        映射语句
      * @param parameter 参数
@@ -167,7 +168,7 @@ public abstract class BaseExecutor implements Executor {
      * @param key           缓存的键
      * @param boundSql      解析后的SQL语句
      * @param <E>           输出结果类型
-     * @return 查询结果
+     * @return 查询结果列表
      * @throws SQLException
      */
     @SuppressWarnings("unchecked")
@@ -189,6 +190,7 @@ public abstract class BaseExecutor implements Executor {
             list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
             // 缓存存在
             if (list != null) {
+                // 对于CALLABLE语句，还需要绑定到IN/INOUT参数上
                 handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
             } else {  // 缓存不存在查询数据库
                 list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
@@ -370,16 +372,31 @@ public abstract class BaseExecutor implements Executor {
 
     /**
      * 从数据库查询数据，查询后缓存查询结果
+     *
+     * @param ms            映射语句对象
+     * @param parameter     参数对象
+     * @param rowBounds     分页限制条件
+     * @param resultHandler 结果处理器
+     * @param key           缓存键
+     * @param boundSql      boundSql对象
+     * @param <E>           结果类型
+     * @return 结果列表
+     * @throws SQLException
      */
     private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         List<E> list;
+        // 向缓存中添加数据，值先用占位符，表示正在查询
         localCache.putObject(key, EXECUTION_PLACEHOLDER);
         try {
+            // 执行查询
             list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
         } finally {
+            // 从缓存中删除占位符
             localCache.removeObject(key);
         }
+        // 将真正的查询结果写入缓存
         localCache.putObject(key, list);
+        // 如果是CALLABLE存储过程的执行，将查询参数存入localOutputParameterCache缓存
         if (ms.getStatementType() == StatementType.CALLABLE) {
             localOutputParameterCache.putObject(key, parameter);
         }

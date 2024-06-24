@@ -302,6 +302,9 @@ public class ResultLoaderMap {
         }
     }
 
+    /**
+     * BaseExecutor的一个实现类，只有isClosed方法是有意义的
+     */
     private static final class ClosedExecutor extends BaseExecutor {
 
         public ClosedExecutor() {

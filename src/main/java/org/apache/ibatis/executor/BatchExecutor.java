@@ -37,6 +37,7 @@ import java.util.List;
 
 /**
  * @author Jeff Butler
+ * 支持批量执行的执行器
  */
 public class BatchExecutor extends BaseExecutor {
 
