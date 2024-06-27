@@ -1,0 +1,4 @@
+1. mybatis-config-sample.xml当前是测试案例使用的
+2. mybatis-config.xml是整个源码阅读过程中使用的
+3. mybatis-config-ex.xml是一个mybatis配置文件示例
+4. mybatis-mapper-ex.xml是一个mybatis映射文件示例
