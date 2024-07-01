@@ -9,7 +9,8 @@
         <property name="jdbc.username" value="{username}"/>
     </properties>
     <settings>
-        <setting name="cacheEnabled" value="true"/>
+        <!--全局性地开启或关闭所有映射器配置文件中的二级缓存，该属性决定最终是否用CachingExecutor装饰。默认是true-->
+        <setting name="cacheEnabled" value="false"/>
         <!--日志打印到控制台-->
         <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
 

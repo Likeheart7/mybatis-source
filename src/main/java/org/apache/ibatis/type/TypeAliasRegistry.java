@@ -146,7 +146,7 @@ public class TypeAliasRegistry {
     }
 
     public void registerAlias(Class<?> type) {
-        // 获取不包括报名的类名，默认用这个类名来做别名
+        // 获取不包括包名的类名，默认用这个类名来做别名
         String alias = type.getSimpleName();
         Alias aliasAnnotation = type.getAnnotation(Alias.class);
         // 如果类被@Alias修饰，获取他的value值来作为别名

@@ -37,10 +37,13 @@ import java.util.*;
  * MyBatis 会为每个 Mapper.xml 映射文件创建一个 XMLMapperBuilder 实例来完成解析。
  */
 public class XMLMapperBuilder extends BaseBuilder {
-
+    // 解析xml文件的
     private final XPathParser parser;
+    // 协助构建的赋值类
     private final MapperBuilderAssistant builderAssistant;
+    // 传入的sql片段
     private final Map<String, XNode> sqlFragments;
+    // 映射文件的路径
     private final String resource;
 
     @Deprecated
@@ -434,6 +437,14 @@ public class XMLMapperBuilder extends BaseBuilder {
         return context.getStringAttribute("databaseId") == null;
     }
 
+    /**
+     * 将resultMap标签下每个id、result标签解析成ResultMapping对象
+     *
+     * @param context    对应的标签节点
+     * @param resultType resultMap对应的类型
+     * @param flags      标志位List，如果是id标签，进入本方法前会填入一个ResultFlag.ID
+     * @return 根据标签节点生成的ResultMapping对象
+     */
     private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, List<ResultFlag> flags) {
         String property;
         // 获取当前标签的property属性值或name属性值作为目标属性名称

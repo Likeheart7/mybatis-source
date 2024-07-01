@@ -33,15 +33,26 @@ public class ResultMapping {
 
     // 全局配置对象
     private Configuration configuration;
+    // 以下属性是resultMap标签的子标签可能包括的所有属性
+    // property，result、id标签对应属性名
     private String property;
+    // 对应查询结果的列名称
     private String column;
+    // 对应Java类型
     private Class<?> javaType;
+    // 对应jdbc类型
     private JdbcType jdbcType;
+    // 对应类型处理器
     private TypeHandler<?> typeHandler;
+    // 嵌套resultMap标识
     private String nestedResultMapId;
+    // 嵌套select标识
     private String nestedQueryId;
+    // 不允许null值
     private Set<String> notNullColumns;
+    // 联接多个表时，必须使用列别名来避免 ResultSet 中出现重复的列名。指定 columnPrefix 允许您将此类列映射到外部 resultMap
     private String columnPrefix;
+    // 标识List，可能填入ResultFlag.ID和ResultFlag.CONSTRUCTOR
     private List<ResultFlag> flags;
     private List<ResultMapping> composites;
     private String resultSet;

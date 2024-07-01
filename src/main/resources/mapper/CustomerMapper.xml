@@ -80,4 +80,11 @@
     </select>
     <!--开启二级缓存-->
     <cache/>
+
+    <select id="selectCustomerWithAddress" resultMap="customerMap">
+        SELECT cust.*, addr.id, addr.street, addr.city, addr.country
+        FROM `t_customer` as cust
+                 left join t_address as addr on cust.id = addr.customer_id
+        where cust.id = #{customerId}
+    </select>
 </mapper>

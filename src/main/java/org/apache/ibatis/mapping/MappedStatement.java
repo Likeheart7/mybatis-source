@@ -42,6 +42,7 @@ public final class MappedStatement {
     private StatementType statementType;
     private ResultSetType resultSetType;
     private SqlSource sqlSource;
+    // 二级缓存数据真正存储的地方
     private Cache cache;
     private ParameterMap parameterMap;
     private List<ResultMap> resultMaps;

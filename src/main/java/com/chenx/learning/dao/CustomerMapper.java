@@ -28,4 +28,9 @@ public interface CustomerMapper {
 
     // 获取指定customer，用于测试懒加载
     List<Customer> findCustomerLazyLoading(@Param("name") String name);
+
+    /**
+     * 获取Customer信息，用于测试整个查询流程，测试代码见{@link com.chenx.learning.exploreprocess.TestProcess#testSelectProcess()}
+     */
+    Customer selectCustomerWithAddress(@Param("customerId") Long customerId);
 }

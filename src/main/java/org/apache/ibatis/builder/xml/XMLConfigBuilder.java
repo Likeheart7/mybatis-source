@@ -130,7 +130,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             environmentsElement(root.evalNode("environments")); // <environment>
             databaseIdProviderElement(root.evalNode("databaseIdProvider")); // <databaseIdProvider>
             typeHandlerElement(root.evalNode("typeHandlers"));  // <typeHandler>
-            mapperElement(root.evalNode("mappers"));    // <mappers>
+            mapperElement(root.evalNode("mappers"));    // <mappers> 此方法内部还会通过XMLMapperBuilder加载映射文件
         } catch (Exception e) {
             throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
         }
@@ -178,6 +178,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         configuration.setLogImpl(logImpl);
     }
 
+
     /**
      * 处理typeAliases节点
      *
@@ -191,7 +192,7 @@ public class XMLConfigBuilder extends BaseBuilder {
                     String typeAliasPackage = child.getStringAttribute("name");
                     configuration.getTypeAliasRegistry().registerAliases(typeAliasPackage);
                 } else {
-                    // 如果不是package标签, 那就是typeAliases，获取他的type和alias属性，将其注册到configuration.typeAliasRegistry.typeAliases这个map中
+                    // 如果不是package标签, 那就是typeAlias，获取他的type和alias属性，将其注册到configuration.typeAliasRegistry.typeAliases这个map中
                     String alias = child.getStringAttribute("alias");
                     String type = child.getStringAttribute("type");
                     try {
@@ -307,14 +308,21 @@ public class XMLConfigBuilder extends BaseBuilder {
             if (vars != null) {
                 defaults.putAll(vars);
             }
+            // 存到parser里是为了后续用来替换配置文件中的${xxx}
             parser.setVariables(defaults);
             configuration.setVariables(defaults);
         }
     }
 
+    /**
+     * 根据settings标签解析出来的Properties对象，对Configuration中很大一部分属性赋值，有配置，用配置，无配置，用默认值。
+     *
+     * @param props settingsAsProperties()解析settings标签获得的Properties对象，也即是setting标签的name、value数据。
+     */
     private void settingsElement(Properties props) {
         configuration.setAutoMappingBehavior(AutoMappingBehavior.valueOf(props.getProperty("autoMappingBehavior", "PARTIAL")));
         configuration.setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior.valueOf(props.getProperty("autoMappingUnknownColumnBehavior", "NONE")));
+        // cacheEnabled默认就是true
         configuration.setCacheEnabled(booleanValueOf(props.getProperty("cacheEnabled"), true));
         configuration.setProxyFactory((ProxyFactory) createInstance(props.getProperty("proxyFactory")));
         configuration.setLazyLoadingEnabled(booleanValueOf(props.getProperty("lazyLoadingEnabled"), false));

@@ -50,7 +50,7 @@ public class DefaultSqlSession implements SqlSession {
 
     // 配置信息
     private final Configuration configuration;
-    // 执行器，主要操作都叫给他
+    // 执行器，主要操作都交给他
     private final Executor executor;
 
     // 是否自动提交

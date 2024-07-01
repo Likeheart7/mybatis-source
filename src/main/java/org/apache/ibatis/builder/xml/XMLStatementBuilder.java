@@ -132,7 +132,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     }
 
     /**
-     * 根据selectKey标签的额各个属性，将其中的SQL解析成MappedStatement对象
+     * 根据selectKey标签的各个属性，将其中的SQL解析成MappedStatement对象
      * 关于selectKey，见{@link SelectKeyGenerator}类注释
      */
     private void processSelectKeyNodes(String id, Class<?> parameterTypeClass, LanguageDriver langDriver) {

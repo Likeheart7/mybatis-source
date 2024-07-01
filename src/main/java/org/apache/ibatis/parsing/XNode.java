@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 
 /**
  * @author Clinton Begin
+ * 处理xml文件的解析和访问。提供边界的方法来读取和操作这些节点。
  */
 public class XNode {
 
@@ -323,6 +324,11 @@ public class XNode {
         return children;
     }
 
+    /**
+     * 获取标签下的每一个子标签，并将其name、value属性作为properties的键值对存入properties对象
+     *
+     * @return 包含所有子标签的name、value对应关系的Properties对象
+     */
     public Properties getChildrenAsProperties() {
         Properties properties = new Properties();
         for (XNode child : getChildren()) {
