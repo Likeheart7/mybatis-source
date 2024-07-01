@@ -25,7 +25,7 @@ public class TestProcess {
             CustomerMapper mapper = sqlSession.getMapper(CustomerMapper.class);
             // 查询两次，测试缓存，加了<setting name="cacheEnabled" value="false"/>所有二级缓存不生效
             // 首先，使用同一个sqlSession执行两次查询，再未开启二级缓存的情况下，也只会查询一次数据库，因为默认一级缓存是SqlSession级别的。就是BaseExecutor下的localCache属性
-            Customer customer = mapper.selectCustomerWithAddress(1L);
+            Customer customer = mapper.find(1L);
             System.out.println(customer);
         } catch (IOException e) {
             // pass

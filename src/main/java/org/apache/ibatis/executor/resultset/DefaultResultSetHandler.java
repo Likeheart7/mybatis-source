@@ -160,7 +160,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
 
     /**
-     * 处理结果集，可能是多结果集，内部会调用handleResultSet()，逐个结果集处理
+     * 处理结果集，可能是多结果集，内部会调用handleResultSet()，逐个结果集处理，同时会处理结果类型完成映射
      */
     @Override
     public List<Object> handleResultSets(Statement stmt) throws SQLException {
@@ -472,6 +472,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
             boolean foundValues = this.useConstructorMappings;
             // 根据ResultMap的配置以及全局信息，决定是否自动映射ResultMap中未明确映射的列
             if (shouldApplyAutomaticMappings(resultMap, false)) {
+                // 将列值填充到属性
                 foundValues = applyAutomaticMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
             }
             // 根据ResultMap映射规则，将ResultSet中的列值与结果对象中的属性值进行映射，这里映射的是显式声明的映射关系
