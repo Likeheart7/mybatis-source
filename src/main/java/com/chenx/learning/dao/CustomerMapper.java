@@ -11,6 +11,7 @@ import java.util.List;
 public interface CustomerMapper {
     // 根据Id查询Customer（不查询Address）
     // @*Provider允许指定一个返回字符串的方法，来提供对应的sql
+    // 使用SelectProvider似乎针对该语句二级缓存不存在
     @SelectProvider(type = CustomerMapperProvider.class, method = "findCustomerById")
     Customer find(@Param("id") long id);
 
