@@ -10,7 +10,10 @@
     </properties>
     <!--全局配置-->
     <settings>
-        <!--全局性地开启或关闭所有映射器配置文件中已配置的任何缓存。-->
+        <!--
+            全局性地开启或关闭所有映射器配置文件中已配置的任何缓存。
+            默认就是true，开启时，会为BaseExecutor包装CachingExecutor装饰器。
+        -->
         <setting name="cacheEnabled" value="true"/>
 
         <!--日志打印到控制台-->

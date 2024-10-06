@@ -57,7 +57,7 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
 
     /**
-     * 对PreparedStatement的数据进行设置
+     * 对PreparedStatement的数据进行设置，在这里只处理数据为空的情况，非空的情况交给子类处理
      *
      * @param ps        PreparedStatement对象
      * @param i         第i个参数

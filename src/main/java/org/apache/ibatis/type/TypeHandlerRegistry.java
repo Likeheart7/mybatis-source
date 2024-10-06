@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
- * 类型处理器注册表，管理所有的TypeHandler实例
+ * 类型处理器注册表，管理所有的TypeHandler
  */
 public final class TypeHandlerRegistry {
     // jdbc类型和类型处理器TypeHandler的映射
@@ -68,6 +68,7 @@ public final class TypeHandlerRegistry {
      * @since 3.5.4
      */
     // 构造方法，注册多个TypeHandler对象
+    // 可以通过<typeHandlers>标签添加自定义的TypeHandler
     public TypeHandlerRegistry(Configuration configuration) {
         this.unknownTypeHandler = new UnknownTypeHandler(configuration);
 
@@ -233,7 +234,7 @@ public final class TypeHandlerRegistry {
     }
 
     /**
-     * 根据jdbc类型获取typeHandler，直接从jdbcTypeHandlerMap取就可以了
+     * 根据jdbc类型获取typeHandler，直接从jdbcTypeHandlerMap取
      *
      * @param jdbcType jdbc类型
      */
@@ -250,7 +251,9 @@ public final class TypeHandlerRegistry {
     }
 
     /**
-     * 用于根据Java类型获取typeHandler的方法
+     * 用于根据Java类型获取typeHandler的方法<br/>
+     * Java数据类型和JDBC类型往往是一对多，所以处理过程是现根据Java类型获取Map&lt;JdbcType, TypeHandler&lt;?&gt;&gt;对象<br/>
+     * 再根据jdbc类型获取对应的TypeHandler对象
      *
      * @param type     Java类型
      * @param jdbcType jdbc类型

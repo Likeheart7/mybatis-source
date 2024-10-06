@@ -24,5 +24,8 @@ public interface ReflectorFactory {
 
     void setClassCacheEnabled(boolean classCacheEnabled);
 
+    /**
+     * 核心方法，通过type获取对应的Reflector
+     */
     Reflector findForClass(Class<?> type);
 }

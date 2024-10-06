@@ -21,7 +21,11 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
+ * <pre>
  * JDBC类型的枚举，是对java.sql.Types的一个封装
+ * 因为数据库的数据类型和Java的数据类型不对等，用于ORM类型转换
+ * @see {@link TypeHandler}
+ * </pre>
  */
 public enum JdbcType {
     /*

@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 public class DefaultReflectorFactory implements ReflectorFactory {
     // 默认是允许Reflector缓存的
     private boolean classCacheEnabled = true;
-    // 存储缓存的Reflector对象
+    // 存储缓存的Reflector对象，key：JavaBean的Class，value：对应的Reflector实例
     private final ConcurrentMap<Class<?>, Reflector> reflectorMap = new ConcurrentHashMap<>();
 
     public DefaultReflectorFactory() {

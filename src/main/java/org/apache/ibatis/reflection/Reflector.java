@@ -33,7 +33,7 @@ import java.util.Map.Entry;
  */
 public class Reflector {
 
-    // 被反射解析的类
+    // 被反射解析的类，构造器中初始化
     private final Class<?> type;
     // 有get方法的属性列表
     private final String[] readablePropertyNames;
